@@ -105,7 +105,24 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 > in this repository should be reviewed and validated by a qualified human developer
 > before being used in any production environment.
 
-### What was AI-generated
+### AI Session Summary
+
+| Metric | Value |
+|---|---|
+| Total AI sessions | 1 |
+| Total AI time | 2h 22m |
+| AI commits | 4 |
+| Models used | Claude Sonnet 4.6 (`claude-sonnet-4.6`) via GitHub Copilot CLI |
+| Tokens (input / output) | Not available from the GitHub Copilot CLI interface |
+| Last session | 2026-03-12 |
+
+### Session Log
+
+| Date | Model | Duration | Commits | Summary |
+|---|---|---|---|---|
+| 2026-03-12 | Claude Sonnet 4.6 | 2h 22m | 4 | Full project bootstrap: scaffold, Hexagonal Architecture, Express HTTPS server, CLI with commander.js, `--enable-security` OTP, git hooks, agent skills |
+
+### Codebase Authorship
 
 | Area | Status |
 |---|---|

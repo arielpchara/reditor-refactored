@@ -2,40 +2,73 @@
 
 ## Purpose
 
-Maintain the **AI & Copilot Usage** section in `README.md`.
-This section informs readers that the project was built with AI assistance,
-that generated content may contain errors, and which areas were AI-generated.
+Maintain two things in the repository:
+1. **`ai-sessions.json`** — a machine-readable log of every AI session
+2. **The AI & Copilot Usage section in `README.md`** — a human-readable summary
+   with disclosure, metrics, and per-area authorship status
 
 ---
 
 ## When to activate this skill
 
-Activate when:
-
-- A significant new feature or module is added by an AI agent
-- The scope of AI involvement changes
-- The project reaches a new milestone
-- Any human reviewer asks for clarification on what was AI-generated
+Activate at the **end of every AI session** (before the final commit), or when:
+- A new AI session starts and the previous one wasn't logged
+- The LLM being used changes mid-session
+- A human reviewer asks for an up-to-date usage report
 
 ---
 
 ## How to execute this skill
 
-### Step 1 — Inventory AI contributions
+### Step 1 — Gather session data
 
-Scan the git log and source files to identify what has been generated or heavily influenced by AI:
+Collect the following information:
 
-```bash
-git log --oneline
+| Field | How to get it |
+|---|---|
+| `date` | Today's date (`date -I`) |
+| `llm` | The model currently in use (ask the AI agent itself: "which model are you?") |
+| `session_start` | Timestamp of the first commit in this session (`git log --reverse --format="%ai" \| head -1`) |
+| `session_end` | Timestamp of the latest commit (`git log -1 --format="%ai"`) |
+| `duration_minutes` | Difference between start and end in minutes |
+| `commits` | All commit SHAs with `Co-authored-by: Copilot` in this session |
+| `tokens_input` | Total input tokens if exposed by the AI tool; otherwise `null` |
+| `tokens_output` | Total output tokens if exposed by the AI tool; otherwise `null` |
+| `summary` | One sentence describing what was built this session |
+
+> Token counts are **not always available** from the AI tool interface.
+> Record them when known; set to `null` otherwise and note "Not available from this interface".
+
+### Step 2 — Update `ai-sessions.json`
+
+Append a new entry to the sessions array:
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "llm": "<model name and ID>",
+  "session_start": "YYYY-MM-DDTHH:MM:SS",
+  "session_end": "YYYY-MM-DDTHH:MM:SS",
+  "duration_minutes": 0,
+  "tokens_input": null,
+  "tokens_output": null,
+  "commits": ["<sha1>", "<sha2>"],
+  "summary": "<one sentence>"
+}
 ```
 
-Look for the `Co-authored-by: Copilot` trailer in commits to identify AI-authored changes.
+### Step 3 — Compute cumulative stats
 
-### Step 2 — Write or update the section
+From `ai-sessions.json` calculate:
+- **Total sessions** — count of entries
+- **Total duration** — sum of all `duration_minutes`
+- **Total commits** — count of all commits across all sessions
+- **Models used** — unique list of `llm` values
+- **Total tokens** — sum of known tokens; note "partial" if any sessions have `null`
 
-Add or update the following section in `README.md`, **after the Architecture section and before the License section**.
+### Step 4 — Update the README section
 
-Use this exact heading and structure:
+Replace the full **⚠️ AI & Copilot Usage** section with this template:
 
 ```markdown
 ## ⚠️ AI & Copilot Usage
@@ -47,22 +80,28 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 > in this repository should be reviewed and validated by a qualified human developer
 > before being used in any production environment.
 
-### What was AI-generated
+### AI Session Summary
 
-List the areas of the codebase that were generated or significantly shaped by AI:
+| Metric | Value |
+|---|---|
+| Total AI sessions | N |
+| Total AI time | Xh Ym |
+| AI commits | N |
+| Models used | list |
+| Tokens (input / output) | X / Y — or "Not available from this interface" |
+| Last session | YYYY-MM-DD |
 
-<!-- Update this list to reflect the current state of the project -->
+### Session Log
+
+| Date | Model | Duration | Commits | Summary |
+|---|---|---|---|---|
+| YYYY-MM-DD | model | Xm | N | summary |
+
+### Codebase Authorship
+
 | Area | Status |
 |---|---|
-| Project scaffold (tsconfig, jest, prettier, nodemon) | 🤖 AI-generated |
-| Hexagonal Architecture structure | 🤖 AI-generated |
-| Express HTTPS server (`src/adapters/http/`) | 🤖 AI-generated |
-| CLI entry point with commander.js (`src/bin.ts`, `src/adapters/cli/`) | 🤖 AI-generated |
-| OTP generation (`src/core/security/`) | 🤖 AI-generated |
-| Git hooks (husky, lint-staged, cspell) | 🤖 AI-generated |
-| Unit tests | 🤖 AI-generated |
-| This README | 🤖 AI-generated |
-| AGENTS.md and skills/ | 🤖 AI-generated |
+| ... | 🤖 / 👤 / 🔀 / ✅ |
 
 ### Status icons
 
@@ -74,17 +113,12 @@ List the areas of the codebase that were generated or significantly shaped by AI
 | ✅ Human-reviewed | AI-generated but reviewed and approved by a human |
 ```
 
-### Step 3 — Keep the table current
-
-Every time a new module or file is added:
-- Add a row to the table with the correct status icon
-- Change `🤖 AI-generated` to `✅ Human-reviewed` once a human has reviewed that area
-
 ---
 
 ## Quality rules
 
-- Never remove this section — it must always be present once added
-- Keep the disclaimer text verbatim — do not soften or remove it
-- Update the table on every significant AI contribution
-- Be honest: if something was human-written, mark it `👤 Human-written`
+- Never remove this section once added
+- Keep the disclaimer verbatim — never soften it
+- Token counts: always be honest — `null` is better than a guess
+- Update authorship table on every significant AI contribution
+- `ai-sessions.json` is the source of truth — README is derived from it
