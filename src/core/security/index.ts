@@ -1,2 +1,4 @@
 export { generateOtp } from './otp';
-export type { Otp, SecurityConfig } from './types';
+export { generateKeyPair, loadKeyPair, saveKeyPair, loadOrGenerateKeyPair } from './keys';
+export { createToken, verifyToken, buildTokenResult } from './jwt';
+export type { Otp, SecurityConfig, KeyPair, JwtPayload, TokenResult } from './types';

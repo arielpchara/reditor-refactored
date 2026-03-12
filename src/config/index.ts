@@ -5,6 +5,10 @@ type ConfigOverrides = {
   host?: string;
   securityEnabled?: boolean;
   otp?: string;
+  tokenTtl?: number;
+  keysDir?: string;
+  jwtPrivateKey?: string;
+  jwtPublicKey?: string;
 };
 
 export const loadConfig = (overrides: ConfigOverrides = {}): AppConfig => ({
@@ -15,4 +19,8 @@ export const loadConfig = (overrides: ConfigOverrides = {}): AppConfig => ({
   certPath: process.env.CERT_PATH,
   keyPath: process.env.KEY_PATH,
   otp: overrides.otp,
+  tokenTtl: overrides.tokenTtl ?? 300,
+  keysDir: overrides.keysDir ?? '.reditor/keys',
+  jwtPrivateKey: overrides.jwtPrivateKey,
+  jwtPublicKey: overrides.jwtPublicKey,
 });

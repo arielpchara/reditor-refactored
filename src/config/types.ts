@@ -6,4 +6,8 @@ export type AppConfig = {
   keyPath: string | undefined;
   securityEnabled: boolean;
   otp: string | undefined;
+  tokenTtl: number;
+  keysDir: string;
+  jwtPrivateKey: string | undefined;
+  jwtPublicKey: string | undefined;
 };

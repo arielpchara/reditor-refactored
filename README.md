@@ -4,7 +4,13 @@
 
 ## Features
 
-No domain implemented yet. Add your first module under `src/core/<domain>/`.
+- **HTTPS server** with auto-generated self-signed certificate
+- **OTP-secured access** — prints a one-time password at startup
+- **JWT authentication** — exchange OTP for a signed RS256 JWT token
+- **Configurable token TTL** — default 5 minutes, customisable via CLI
+- **Persistent RSA signing keys** — generated once, reused across restarts
+
+No file-editing UI yet. Add your first module under `src/core/<domain>/`.
 
 ## Installation
 
@@ -23,7 +29,9 @@ npx reditor serve [options]
 |---|---|---|
 | `-p, --port <port>` | `3000` | Port the server listens on |
 | `-H, --host <host>` | `localhost` | Host the server binds to |
-| `--enable-security` | `false` | Enable HTTPS and generate a one-time password (OTP) for web access |
+| `--enable-security` | `false` | Enable HTTPS, OTP, and JWT authentication |
+| `--token-ttl <seconds>` | `300` | JWT token time-to-live in seconds |
+| `--keys-dir <path>` | `.reditor/keys` | Directory to store RSA signing key pair |
 | `-h, --help` | — | Display help |
 
 ### Examples
@@ -35,16 +43,17 @@ npx reditor serve
 # Start on a custom port
 npx reditor serve --port 8080
 
-# Enable HTTPS + OTP
-npx reditor serve --enable-security
+# Enable HTTPS + OTP + JWT with 10-minute tokens
+npx reditor serve --enable-security --token-ttl 600
 ```
 
-When `--enable-security` is set, the OTP is printed to the console at startup:
+When `--enable-security` is set, startup output includes:
 
 ```
   🔐 Security enabled
   🔑 One-Time Password: 482910
-     Use this code to access the web interface.
+  ⏱  Token TTL: 300s
+     POST /auth/exchange-token with { "otp": "<code>" } to get a JWT.
 ```
 
 ## HTTP API
@@ -57,6 +66,41 @@ Returns `{ "status": "ok" }` when the server is running.
 curl https://localhost:3000/health
 # → {"status":"ok"}
 ```
+
+### `POST /auth/exchange-token` *(requires `--enable-security`)*
+
+Exchange the OTP printed at startup for a signed RS256 JWT token.
+
+**Request:**
+
+```json
+{ "otp": "482910" }
+```
+
+**Response (200):**
+
+```json
+{ "token": "<JWT>", "expiresIn": 300 }
+```
+
+**Errors:**
+
+| Status | Reason |
+|---|---|
+| `401` | Missing or incorrect OTP |
+| `403` | Security is not enabled |
+| `500` | Signing key not available |
+
+Use the returned `token` as a `Bearer` header for subsequent requests.
+
+## Security
+
+When `--enable-security` is used:
+
+1. An **RSA-2048 key pair** is generated (or loaded if it already exists) from `--keys-dir`.
+2. A **6-digit OTP** is generated using `crypto.randomInt` (cryptographically secure).
+3. The OTP is only valid for the current process lifetime.
+4. Tokens are signed with **RS256** and expire after `--token-ttl` seconds.
 
 ## Configuration
 
@@ -78,7 +122,7 @@ npm test              # run unit tests
 npm run test:coverage # tests + coverage report
 npm run build         # compile TypeScript → dist/
 npm run format        # auto-format with Prettier
-npm run test:coverage # tests + coverage report
+npm run typecheck     # TypeScript type-check without emit
 ```
 
 ## Architecture
@@ -89,9 +133,9 @@ See [AGENTS.md](./AGENTS.md) for full conventions and contribution guidelines.
 ```
 src/
 ├── core/
-│   └── security/  # OTP generation
-├── adapters/      # cli + http ports
-├── config/        # app configuration
+│   └── security/  # OTP generation, RSA key pair, JWT signing
+├── adapters/      # cli (commander) + http (express)
+├── config/        # app configuration (AppConfig)
 └── bin.ts         # CLI entry point (npx)
 web/               # browser UI (served as static files)
 ```
@@ -109,9 +153,9 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 
 | Metric | Value |
 |---|---|
-| Total AI sessions | 1 |
-| Total AI time | 2h 22m |
-| AI commits | 4 |
+| Total AI sessions | 2 |
+| Total AI time | ~4h |
+| AI commits | 6 |
 | Models used | Claude Sonnet 4.6 (`claude-sonnet-4.6`) via GitHub Copilot CLI |
 | Tokens (input / output) | Not available from the GitHub Copilot CLI interface |
 | Last session | 2026-03-12 |
@@ -121,6 +165,7 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 | Date | Model | Duration | Commits | Summary |
 |---|---|---|---|---|
 | 2026-03-12 | Claude Sonnet 4.6 | 2h 22m | 4 | Full project bootstrap: scaffold, Hexagonal Architecture, Express HTTPS server, CLI with commander.js, `--enable-security` OTP, git hooks, agent skills |
+| 2026-03-12 | Claude Sonnet 4.6 | ~1.5h | 2 | Security feature: `POST /auth/exchange-token`, RSA-2048 key pair generation, RS256 JWT signing, `--token-ttl`, `--keys-dir` CLI params, 23 unit tests |
 
 ## License
 

@@ -8,6 +8,8 @@ describe('parseServeOptions', () => {
     expect(opts.port).toBe('3000');
     expect(opts.host).toBe('localhost');
     expect(opts.enableSecurity).toBe(false);
+    expect(opts.tokenTtl).toBe('300');
+    expect(opts.keysDir).toBe('.reditor/keys');
   });
 
   it('parses --port', () => {
@@ -33,5 +35,15 @@ describe('parseServeOptions', () => {
   it('defaults enableSecurity to false when flag is absent', () => {
     const opts = parseServeOptions(argv('--port', '4000'));
     expect(opts.enableSecurity).toBe(false);
+  });
+
+  it('parses --token-ttl', () => {
+    const opts = parseServeOptions(argv('--token-ttl', '600'));
+    expect(opts.tokenTtl).toBe('600');
+  });
+
+  it('parses --keys-dir', () => {
+    const opts = parseServeOptions(argv('--keys-dir', '/tmp/keys'));
+    expect(opts.keysDir).toBe('/tmp/keys');
   });
 });
