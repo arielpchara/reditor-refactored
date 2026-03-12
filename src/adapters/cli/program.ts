@@ -3,7 +3,7 @@ import { Command } from 'commander';
 export type ServeOptions = {
   port: string;
   host: string;
-  enableSecurity: boolean;
+  forceDisableSecurity: boolean;
   tokenTtl: string;
   keysDir: string;
   forceOtp: string | undefined;
@@ -26,8 +26,8 @@ export const buildProgram = (): Command => {
     .option('-p, --port <port>', 'Port to listen on', '3000')
     .option('-H, --host <host>', 'Host to bind to', 'localhost')
     .option(
-      '--enable-security',
-      'Enable HTTPS and generate a one-time password (OTP) for web access',
+      '--force-disable-security',
+      '[DANGER] Disable OTP and JWT auth — anyone on the network can access the file',
       false,
     )
     .option('--token-ttl <seconds>', 'JWT token time-to-live in seconds', '300')
@@ -47,7 +47,7 @@ export const parseServeCommand = (argv: string[]): ParsedServeCommand => {
   const opts = cmd?.opts<ServeOptions>() ?? {
     port: '3000',
     host: 'localhost',
-    enableSecurity: false,
+    forceDisableSecurity: false,
     tokenTtl: '300',
     keysDir: '.reditor/keys',
     forceOtp: undefined,

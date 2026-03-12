@@ -16,7 +16,7 @@ const serveCmd = program.commands.find((c) => c.name() === 'serve');
 const opts = serveCmd?.opts<ServeOptions>() ?? {
   port: '3000',
   host: 'localhost',
-  enableSecurity: false,
+  forceDisableSecurity: false,
   tokenTtl: '300',
   keysDir: '.reditor/keys',
   forceOtp: undefined,
@@ -45,16 +45,26 @@ if (fileStat.isDirectory()) {
 }
 // ──────────────────────────────────────────────────────────────────────────
 
-const isForced = opts.enableSecurity && opts.forceOtp !== undefined;
-const otp = opts.enableSecurity ? (opts.forceOtp ?? generateOtp()) : undefined;
+const securityEnabled = !opts.forceDisableSecurity;
+const isForced = securityEnabled && opts.forceOtp !== undefined;
+const otp = securityEnabled ? (opts.forceOtp ?? generateOtp()) : undefined;
 const tokenTtl = Number(opts.tokenTtl);
+
+if (opts.forceDisableSecurity) {
+  logger.warn('--force-disable-security is active: OTP and JWT auth are DISABLED');
+  process.stdout.write('\n');
+  process.stdout.write('  ⚠️  WARNING: Security is DISABLED via --force-disable-security\n');
+  process.stdout.write('     Anyone with network access to this server can read the file.\n');
+  process.stdout.write('     Never use this flag in production or on untrusted networks.\n');
+  process.stdout.write('\n');
+}
 
 if (otp) {
   logger.info('OTP generated for session', { forced: isForced });
 }
 
 let keyPair: { privateKey: string; publicKey: string } | undefined;
-if (opts.enableSecurity) {
+if (securityEnabled) {
   const existing = loadKeyPair(opts.keysDir);
   if (existing) {
     keyPair = existing;
@@ -69,7 +79,7 @@ if (opts.enableSecurity) {
 const config = loadConfig({
   port: Number(opts.port),
   host: opts.host,
-  securityEnabled: opts.enableSecurity,
+  securityEnabled,
   otp,
   tokenTtl,
   keysDir: opts.keysDir,
