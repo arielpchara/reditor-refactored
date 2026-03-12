@@ -122,29 +122,6 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 |---|---|---|---|---|
 | 2026-03-12 | Claude Sonnet 4.6 | 2h 22m | 4 | Full project bootstrap: scaffold, Hexagonal Architecture, Express HTTPS server, CLI with commander.js, `--enable-security` OTP, git hooks, agent skills |
 
-### Codebase Authorship
-
-| Area | Status |
-|---|---|
-| Project scaffold (tsconfig, jest, prettier, nodemon) | 🤖 AI-generated |
-| Hexagonal Architecture structure | 🤖 AI-generated |
-| Express HTTPS server (`src/adapters/http/`) | 🤖 AI-generated |
-| CLI entry point with commander.js (`src/bin.ts`, `src/adapters/cli/`) | 🤖 AI-generated |
-| OTP generation (`src/core/security/`) | 🤖 AI-generated |
-| Git hooks (husky, lint-staged, cspell) | 🤖 AI-generated |
-| Unit tests | 🤖 AI-generated |
-| This README | 🤖 AI-generated |
-| AGENTS.md and `skills/` | 🤖 AI-generated |
-
-### Status icons
-
-| Icon | Meaning |
-|---|---|
-| 🤖 AI-generated | Written entirely by an AI agent |
-| 👤 Human-written | Written entirely by a human |
-| 🔀 Mixed | Combination of AI and human authorship |
-| ✅ Human-reviewed | AI-generated but reviewed and approved by a human |
-
 ## License
 
 ISC
