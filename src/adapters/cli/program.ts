@@ -6,6 +6,7 @@ export type ServeOptions = {
   enableSecurity: boolean;
   tokenTtl: string;
   keysDir: string;
+  forceOtp: string | undefined;
 };
 
 export const buildProgram = (): Command => {
@@ -25,6 +26,7 @@ export const buildProgram = (): Command => {
     )
     .option('--token-ttl <seconds>', 'JWT token time-to-live in seconds', '300')
     .option('--keys-dir <path>', 'Directory to store RSA signing keys', '.reditor/keys')
+    .option('--force-otp <otp>', '[TEST ONLY] Override the generated OTP with a fixed value')
     .action(() => {
       // action is handled in bin.ts to keep this file pure/testable
     });
@@ -42,6 +44,7 @@ export const parseServeOptions = (argv: string[]): ServeOptions => {
     enableSecurity: false,
     tokenTtl: '300',
     keysDir: '.reditor/keys',
+    forceOtp: undefined,
   };
   return opts;
 };

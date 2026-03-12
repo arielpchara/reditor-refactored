@@ -10,6 +10,7 @@ describe('parseServeOptions', () => {
     expect(opts.enableSecurity).toBe(false);
     expect(opts.tokenTtl).toBe('300');
     expect(opts.keysDir).toBe('.reditor/keys');
+    expect(opts.forceOtp).toBeUndefined();
   });
 
   it('parses --port', () => {
@@ -45,5 +46,15 @@ describe('parseServeOptions', () => {
   it('parses --keys-dir', () => {
     const opts = parseServeOptions(argv('--keys-dir', '/tmp/keys'));
     expect(opts.keysDir).toBe('/tmp/keys');
+  });
+
+  it('parses --force-otp', () => {
+    const opts = parseServeOptions(argv('--force-otp', '111111'));
+    expect(opts.forceOtp).toBe('111111');
+  });
+
+  it('defaults forceOtp to undefined when flag is absent', () => {
+    const opts = parseServeOptions(argv('--port', '4000'));
+    expect(opts.forceOtp).toBeUndefined();
   });
 });

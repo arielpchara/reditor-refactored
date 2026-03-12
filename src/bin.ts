@@ -16,9 +16,11 @@ const opts = serveCmd?.opts<ServeOptions>() ?? {
   enableSecurity: false,
   tokenTtl: '300',
   keysDir: '.reditor/keys',
+  forceOtp: undefined,
 };
 
-const otp = opts.enableSecurity ? generateOtp() : undefined;
+const isForced = opts.enableSecurity && opts.forceOtp !== undefined;
+const otp = opts.enableSecurity ? (opts.forceOtp ?? generateOtp()) : undefined;
 const tokenTtl = Number(opts.tokenTtl);
 
 const keyPair = opts.enableSecurity ? loadOrGenerateKeyPair(opts.keysDir) : undefined;
@@ -36,6 +38,11 @@ const config = loadConfig({
 
 if (config.securityEnabled && otp) {
   console.log('');
+  if (isForced) {
+    console.log(
+      '  ⚠️  WARNING: --force-otp is set — OTP is predictable. Do NOT use in production!',
+    );
+  }
   console.log('  🔐 Security enabled');
   console.log(`  🔑 One-Time Password: ${otp}`);
   console.log(`  ⏱  Token TTL: ${tokenTtl}s`);
