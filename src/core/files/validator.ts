@@ -1,12 +1,16 @@
 import path from 'path';
 import { MAX_FILE_SIZE_BYTES } from './types';
 
-/** Returns true if every byte in the buffer is within the ASCII range (0–127). */
-export const isAsciiBuffer = (buf: Buffer): boolean => {
-  for (let i = 0; i < buf.length; i++) {
-    if (buf[i] > 127) return false;
+/** Returns true if the buffer contains valid UTF-8 text with no null bytes,
+ *  i.e. content a browser can render as text. */
+export const isTextBuffer = (buf: Buffer): boolean => {
+  if (buf.includes(0x00)) return false;
+  try {
+    new TextDecoder('utf-8', { fatal: true }).decode(buf);
+    return true;
+  } catch {
+    return false;
   }
-  return true;
 };
 
 /** Returns true if resolvedFilePath is strictly inside rootDir (no traversal). */

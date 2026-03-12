@@ -13,7 +13,7 @@ export type FileContent = {
 export type FileValidationError =
   | { kind: 'NOT_FOUND'; path: string }
   | { kind: 'PATH_TRAVERSAL'; path: string }
-  | { kind: 'NOT_ASCII'; path: string }
+  | { kind: 'NOT_TEXT'; path: string }
   | { kind: 'TOO_LARGE'; path: string; sizeBytes: number; maxBytes: number }
   | { kind: 'IS_DIRECTORY'; path: string }
   | { kind: 'READ_ERROR'; path: string; message: string };

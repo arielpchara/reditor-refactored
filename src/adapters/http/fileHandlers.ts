@@ -1,12 +1,13 @@
+import path from 'path';
 import { Request, Response } from 'express';
 import { AppConfig } from '../../config/types';
-import { readAbsoluteFile } from '../../core/files';
+import { readFile } from '../../core/files';
 import { RouteHandler } from './types';
 import { logger } from '../logger';
 
 export const makeFileHandler = (config: AppConfig): RouteHandler => {
   return (_req: Request, res: Response): void => {
-    const result = readAbsoluteFile(config.file);
+    const result = readFile(path.dirname(config.file), path.basename(config.file));
 
     if (!result.ok) {
       const { error } = result;
@@ -17,9 +18,9 @@ export const makeFileHandler = (config: AppConfig): RouteHandler => {
           });
           res.status(404).json({ error: `File not found: ${error.path}` });
           return;
-        case 'NOT_ASCII':
-          logger.warn('Configured file is not ASCII-encoded', { file: error.path });
-          res.status(422).json({ error: 'File is not ASCII-encoded' });
+        case 'NOT_TEXT':
+          logger.warn('Configured file is not readable as text', { file: error.path });
+          res.status(422).json({ error: 'File is not readable as text' });
           return;
         case 'TOO_LARGE':
           logger.warn('Configured file exceeds size limit', {
@@ -43,9 +44,7 @@ export const makeFileHandler = (config: AppConfig): RouteHandler => {
           res.status(500).json({ error: `Could not read file: ${error.message}` });
           return;
         case 'PATH_TRAVERSAL':
-          logger.error('Unexpected path traversal error for absolute configured file', {
-            file: error.path,
-          });
+          logger.error('Path traversal detected for configured file', { file: error.path });
           res.status(500).json({ error: 'Internal configuration error' });
           return;
       }

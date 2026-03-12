@@ -1,22 +1,29 @@
-import { isAsciiBuffer, isWithinRoot, isWithinSizeLimit } from '../../../core/files/validator';
+import { isTextBuffer, isWithinRoot, isWithinSizeLimit } from '../../../core/files/validator';
 import { MAX_FILE_SIZE_BYTES } from '../../../core/files/types';
 
-describe('isAsciiBuffer', () => {
+describe('isTextBuffer', () => {
   it('returns true for a pure ASCII buffer', () => {
-    expect(isAsciiBuffer(Buffer.from('hello world\n'))).toBe(true);
+    expect(isTextBuffer(Buffer.from('hello world\n'))).toBe(true);
   });
 
   it('returns true for an empty buffer', () => {
-    expect(isAsciiBuffer(Buffer.alloc(0))).toBe(true);
+    expect(isTextBuffer(Buffer.alloc(0))).toBe(true);
   });
 
-  it('returns false when a byte exceeds 127', () => {
-    const buf = Buffer.from([72, 101, 108, 128]); // 'Hel' + 0x80
-    expect(isAsciiBuffer(buf)).toBe(false);
+  it('returns true for a valid UTF-8 buffer with multibyte chars', () => {
+    expect(isTextBuffer(Buffer.from('héllo', 'utf8'))).toBe(true);
   });
 
-  it('returns false for a UTF-8 buffer with multibyte chars', () => {
-    expect(isAsciiBuffer(Buffer.from('héllo', 'utf8'))).toBe(false);
+  it('returns true for a UTF-8 buffer with emoji', () => {
+    expect(isTextBuffer(Buffer.from('hello 🌍', 'utf8'))).toBe(true);
+  });
+
+  it('returns false when the buffer contains a null byte', () => {
+    expect(isTextBuffer(Buffer.from([72, 101, 0x00, 108, 111]))).toBe(false);
+  });
+
+  it('returns false for invalid UTF-8 bytes', () => {
+    expect(isTextBuffer(Buffer.from([0xff, 0xfe, 0x00, 0x01]))).toBe(false);
   });
 });
 

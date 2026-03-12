@@ -25,6 +25,13 @@ describe('readFile', () => {
     if (result.ok) expect(result.file.content).toBe('hello world');
   });
 
+  it('returns file content for a valid UTF-8 file with multibyte chars', () => {
+    write('utf8.txt', Buffer.from('héllo 🌍', 'utf8'));
+    const result = readFile(tmpDir, 'utf8.txt');
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.file.content).toBe('héllo 🌍');
+  });
+
   it('returns NOT_FOUND for a missing file', () => {
     const result = readFile(tmpDir, 'missing.txt');
     expect(result.ok).toBe(false);
@@ -37,11 +44,11 @@ describe('readFile', () => {
     if (!result.ok) expect(result.error.kind).toBe('PATH_TRAVERSAL');
   });
 
-  it('returns NOT_ASCII for a file with non-ASCII bytes', () => {
-    write('binary.bin', Buffer.from([65, 66, 200, 201]));
+  it('returns NOT_TEXT for a binary file with null bytes', () => {
+    write('binary.bin', Buffer.from([65, 66, 0x00, 0x01]));
     const result = readFile(tmpDir, 'binary.bin');
     expect(result.ok).toBe(false);
-    if (!result.ok) expect(result.error.kind).toBe('NOT_ASCII');
+    if (!result.ok) expect(result.error.kind).toBe('NOT_TEXT');
   });
 
   it('returns TOO_LARGE for a file exceeding the size limit', () => {
