@@ -9,6 +9,7 @@ type ConfigOverrides = {
   keysDir?: string;
   jwtPrivateKey?: string;
   jwtPublicKey?: string;
+  root?: string;
 };
 
 export const loadConfig = (overrides: ConfigOverrides = {}): AppConfig => ({
@@ -23,4 +24,5 @@ export const loadConfig = (overrides: ConfigOverrides = {}): AppConfig => ({
   keysDir: overrides.keysDir ?? '.reditor/keys',
   jwtPrivateKey: overrides.jwtPrivateKey,
   jwtPublicKey: overrides.jwtPublicKey,
+  root: overrides.root ?? process.env.REDITOR_ROOT ?? process.cwd(),
 });

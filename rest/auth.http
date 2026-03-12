@@ -6,7 +6,7 @@
 #   npx reditor serve --enable-security
 #
 # For testing with a predictable OTP (⚠️ TEST ONLY):
-#   npx reditor serve --enable-security --force-otp 111111
+#   npx reditor serve --enable-security --force-otp 123
 
 @host = localhost
 @port = 3000
@@ -21,18 +21,18 @@ POST {{baseUrl}}/auth/exchange-token
 Content-Type: application/json
 
 {
-  "otp": "123456"
+  "otp": "123"
 }
 
 ###
 
-### Exchange OTP for JWT — forced OTP (⚠️ TEST ONLY — requires --force-otp 111111)
+### Exchange OTP for JWT — forced OTP (⚠️ TEST ONLY — requires --force-otp 123)
 # Expected: 200 {"token":"<JWT>","expiresIn":300}
 POST {{baseUrl}}/auth/exchange-token
 Content-Type: application/json
 
 {
-  "otp": "111111"
+  "otp": "123"
 }
 
 ###

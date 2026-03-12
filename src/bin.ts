@@ -17,6 +17,7 @@ const opts = serveCmd?.opts<ServeOptions>() ?? {
   tokenTtl: '300',
   keysDir: '.reditor/keys',
   forceOtp: undefined,
+  root: process.cwd(),
 };
 
 const isForced = opts.enableSecurity && opts.forceOtp !== undefined;
@@ -34,6 +35,7 @@ const config = loadConfig({
   keysDir: opts.keysDir,
   jwtPrivateKey: keyPair?.privateKey,
   jwtPublicKey: keyPair?.publicKey,
+  root: opts.root,
 });
 
 if (config.securityEnabled && otp) {
