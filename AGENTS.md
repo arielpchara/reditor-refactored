@@ -25,6 +25,16 @@ Reusable agent skills live in `skills/`. Each skill is a self-contained instruct
 
 A Node.js CLI tool that spins up a local HTTPS server and exposes a browser-based file editor. Run `npx reditor serve` on any machine and edit its files from any browser, with optional OTP-secured access.
 
+### Scenarios
+A DevOps should edit a complex config file, the shell editor sucks, REDITOR came to resolve this providing a web interface safely to edit this file with a fancy interface, and helpful tools.
+
+- is a CLI program
+- runs using npx
+- runs without clone and build the code
+- is published in npm repo
+- `npm reditor <filename> [options]`
+- when installed should no require internet, only local network
+
 The project follows **Hexagonal Architecture** to enforce a strict separation of concerns.
 
 ```
