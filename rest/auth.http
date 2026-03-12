@@ -1,0 +1,55 @@
+# auth — reditor HTTP scenarios
+# Base URL: update @host and @port to match your running server
+# Use the REST Client VS Code extension to run these requests.
+#
+# Prerequisites: start the server with --enable-security
+#   npx reditor serve --enable-security
+# Then copy the OTP printed in the console into the request body below.
+
+@host = localhost
+@port = 3000
+@baseUrl = https://{{host}}:{{port}}
+
+# After a successful exchange, paste the returned token here to use authenticated endpoints:
+@token = <paste JWT token here>
+
+### Exchange OTP for JWT — valid OTP
+# Expected: 200 {"token":"<JWT>","expiresIn":300}
+POST {{baseUrl}}/auth/exchange-token
+Content-Type: application/json
+
+{
+  "otp": "123456"
+}
+
+###
+
+### Exchange OTP for JWT — wrong OTP
+# Expected: 401 {"error":"Invalid OTP"}
+POST {{baseUrl}}/auth/exchange-token
+Content-Type: application/json
+
+{
+  "otp": "000000"
+}
+
+###
+
+### Exchange OTP for JWT — missing OTP field
+# Expected: 401 {"error":"Invalid OTP"}
+POST {{baseUrl}}/auth/exchange-token
+Content-Type: application/json
+
+{}
+
+###
+
+### Exchange OTP for JWT — security not enabled
+# Expected: 403 {"error":"Security is not enabled"}
+# (start server without --enable-security to reproduce)
+POST {{baseUrl}}/auth/exchange-token
+Content-Type: application/json
+
+{
+  "otp": "123456"
+}

@@ -1,0 +1,11 @@
+# health — reditor HTTP scenarios
+# Base URL: update @host and @port to match your running server
+# Use the REST Client VS Code extension to run these requests.
+
+@host = localhost
+@port = 3000
+@baseUrl = https://{{host}}:{{port}}
+
+### Health check — server is running
+# Expected: 200 {"status":"ok"}
+GET {{baseUrl}}/health
