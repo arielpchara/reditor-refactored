@@ -51,3 +51,51 @@ export const readFile = (rootDir: string, relativePath: string): FileResult => {
     file: { path: relativePath, content: buf.toString('ascii'), sizeBytes: stat.size },
   };
 };
+
+/** Read a file by its absolute path (file already validated at startup — no traversal check). */
+export const readAbsoluteFile = (absolutePath: string): FileResult => {
+  if (!fs.existsSync(absolutePath)) {
+    return { ok: false, error: { kind: 'NOT_FOUND', path: absolutePath } };
+  }
+
+  const stat = fs.statSync(absolutePath);
+
+  if (stat.isDirectory()) {
+    return { ok: false, error: { kind: 'IS_DIRECTORY', path: absolutePath } };
+  }
+
+  if (!isWithinSizeLimit(stat.size)) {
+    return {
+      ok: false,
+      error: {
+        kind: 'TOO_LARGE',
+        path: absolutePath,
+        sizeBytes: stat.size,
+        maxBytes: MAX_FILE_SIZE_BYTES,
+      },
+    };
+  }
+
+  let buf: Buffer;
+  try {
+    buf = fs.readFileSync(absolutePath);
+  } catch (e) {
+    return {
+      ok: false,
+      error: { kind: 'READ_ERROR', path: absolutePath, message: (e as Error).message },
+    };
+  }
+
+  if (!isAsciiBuffer(buf)) {
+    return { ok: false, error: { kind: 'NOT_ASCII', path: absolutePath } };
+  }
+
+  return {
+    ok: true,
+    file: {
+      path: path.basename(absolutePath),
+      content: buf.toString('ascii'),
+      sizeBytes: stat.size,
+    },
+  };
+};

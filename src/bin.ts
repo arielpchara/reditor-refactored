@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import path from 'path';
+import fs from 'fs';
 import { buildProgram } from './adapters/cli/program';
 import { startServer } from './adapters/http';
 import { generateOtp, loadOrGenerateKeyPair } from './core/security';
@@ -17,8 +19,30 @@ const opts = serveCmd?.opts<ServeOptions>() ?? {
   tokenTtl: '300',
   keysDir: '.reditor/keys',
   forceOtp: undefined,
-  root: process.cwd(),
 };
+
+// ── File validation (must happen before server starts) ─────────────────────
+const rawFile: string | undefined = serveCmd?.args[0];
+
+if (!rawFile) {
+  console.error('Error: a file path is required.\n  Usage: reditor serve <file>');
+  process.exit(1);
+}
+
+const absoluteFile = path.resolve(rawFile);
+
+if (!fs.existsSync(absoluteFile)) {
+  console.error(`Error: file not found — ${rawFile}`);
+  process.exit(1);
+}
+
+const fileStat = fs.statSync(absoluteFile);
+
+if (fileStat.isDirectory()) {
+  console.error(`Error: "${rawFile}" is a directory. Provide a file path, not a directory.`);
+  process.exit(1);
+}
+// ──────────────────────────────────────────────────────────────────────────
 
 const isForced = opts.enableSecurity && opts.forceOtp !== undefined;
 const otp = opts.enableSecurity ? (opts.forceOtp ?? generateOtp()) : undefined;
@@ -35,7 +59,7 @@ const config = loadConfig({
   keysDir: opts.keysDir,
   jwtPrivateKey: keyPair?.privateKey,
   jwtPublicKey: keyPair?.publicKey,
-  root: opts.root,
+  file: absoluteFile,
 });
 
 if (config.securityEnabled && otp) {

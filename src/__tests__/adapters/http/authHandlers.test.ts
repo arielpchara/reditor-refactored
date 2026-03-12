@@ -18,7 +18,7 @@ const buildTestConfig = (overrides: Partial<AppConfig> = {}): AppConfig => {
     keysDir: '.reditor/keys',
     jwtPrivateKey: kp.privateKey,
     jwtPublicKey: kp.publicKey,
-    root: process.cwd(),
+    file: process.cwd() + '/package.json',
     ...overrides,
   };
 };

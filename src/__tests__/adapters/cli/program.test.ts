@@ -1,10 +1,20 @@
-import { parseServeOptions } from '../../../adapters/cli/program';
+import { parseServeCommand } from '../../../adapters/cli/program';
 
 const argv = (...args: string[]) => ['node', 'bin.js', 'serve', ...args];
 
-describe('parseServeOptions', () => {
-  it('uses defaults when no options are given', () => {
-    const opts = parseServeOptions(argv());
+describe('parseServeCommand', () => {
+  it('parses positional file argument', () => {
+    const { file } = parseServeCommand(argv('myfile.ts'));
+    expect(file).toBe('myfile.ts');
+  });
+
+  it('returns undefined file when no argument is given', () => {
+    const { file } = parseServeCommand(argv());
+    expect(file).toBeUndefined();
+  });
+
+  it('uses option defaults when no options are given', () => {
+    const { opts } = parseServeCommand(argv('myfile.ts'));
     expect(opts.port).toBe('3000');
     expect(opts.host).toBe('localhost');
     expect(opts.enableSecurity).toBe(false);
@@ -14,47 +24,47 @@ describe('parseServeOptions', () => {
   });
 
   it('parses --port', () => {
-    const opts = parseServeOptions(argv('--port', '8080'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--port', '8080'));
     expect(opts.port).toBe('8080');
   });
 
   it('parses -p shorthand', () => {
-    const opts = parseServeOptions(argv('-p', '9000'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '-p', '9000'));
     expect(opts.port).toBe('9000');
   });
 
   it('parses --host', () => {
-    const opts = parseServeOptions(argv('--host', '0.0.0.0'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--host', '0.0.0.0'));
     expect(opts.host).toBe('0.0.0.0');
   });
 
   it('parses --enable-security as true', () => {
-    const opts = parseServeOptions(argv('--enable-security'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--enable-security'));
     expect(opts.enableSecurity).toBe(true);
   });
 
   it('defaults enableSecurity to false when flag is absent', () => {
-    const opts = parseServeOptions(argv('--port', '4000'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--port', '4000'));
     expect(opts.enableSecurity).toBe(false);
   });
 
   it('parses --token-ttl', () => {
-    const opts = parseServeOptions(argv('--token-ttl', '600'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--token-ttl', '600'));
     expect(opts.tokenTtl).toBe('600');
   });
 
   it('parses --keys-dir', () => {
-    const opts = parseServeOptions(argv('--keys-dir', '/tmp/keys'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--keys-dir', '/tmp/keys'));
     expect(opts.keysDir).toBe('/tmp/keys');
   });
 
   it('parses --force-otp', () => {
-    const opts = parseServeOptions(argv('--force-otp', '111111'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--force-otp', '111111'));
     expect(opts.forceOtp).toBe('111111');
   });
 
   it('defaults forceOtp to undefined when flag is absent', () => {
-    const opts = parseServeOptions(argv('--port', '4000'));
+    const { opts } = parseServeCommand(argv('myfile.ts', '--port', '4000'));
     expect(opts.forceOtp).toBeUndefined();
   });
 });

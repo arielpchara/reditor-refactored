@@ -1,3 +1,3 @@
-export { buildProgram, parseServeOptions } from './program';
+export { buildProgram, parseServeCommand } from './program';
 export type { CliCommand } from './types';
-export type { ServeOptions } from './program';
+export type { ServeOptions, ParsedServeCommand } from './program';

@@ -22,35 +22,34 @@ npm run build
 ## CLI Usage
 
 ```bash
-npx reditor serve [options]
+npx reditor serve <file> [options]
 ```
 
-| Option | Default | Description |
+| Argument / Option | Default | Description |
 |---|---|---|
+| `<file>` | **required** | Path to the file to edit in the browser |
 | `-p, --port <port>` | `3000` | Port the server listens on |
 | `-H, --host <host>` | `localhost` | Host the server binds to |
 | `--enable-security` | `false` | Enable HTTPS, OTP, and JWT authentication |
 | `--token-ttl <seconds>` | `300` | JWT token time-to-live in seconds |
 | `--keys-dir <path>` | `.reditor/keys` | Directory to store RSA signing key pair |
-| `--root <path>` | `cwd` | Root directory files are served from |
 | `--force-otp <otp>` | — | **[TEST ONLY]** Override the generated OTP with a fixed value |
 | `-h, --help` | — | Display help |
 
 ### Examples
 
 ```bash
-# Start with plain HTTP on default port
-npx reditor serve
+# Edit a file (plain HTTP)
+npx reditor serve ./config/server.conf
 
-# Start on a custom port
-npx reditor serve --port 8080
+# Edit a file on a custom port
+npx reditor serve ./config/server.conf --port 8080
 
-# Serve files from a specific directory
-npx reditor serve --root /home/user/projects
-
-# Enable HTTPS + OTP + JWT with 10-minute tokens
-npx reditor serve --enable-security --token-ttl 600 --root /home/user/projects
+# Edit a file with HTTPS + OTP security and 10-minute tokens
+npx reditor serve ./config/server.conf --enable-security --token-ttl 600
 ```
+
+> If `<file>` is omitted or the path does not exist or is a directory, the program prints an error and exits without starting the server.
 
 When `--enable-security` is set, startup output includes:
 
@@ -98,16 +97,16 @@ Exchange the OTP printed at startup for a signed RS256 JWT token.
 
 Use the returned `token` as a `Bearer` header for subsequent requests.
 
-### `GET /file?path=<relative-path>`
+### `GET /file`
 
-Returns the raw content of a file relative to `--root`. Requires a valid JWT in the `Authorization` header when `--enable-security` is active.
+Returns the raw content of the file configured at startup (`<file>` argument). Requires a valid JWT in the `Authorization` header when `--enable-security` is active.
 
 ```bash
 # Without security
-curl https://localhost:3000/file?path=src/index.ts
+curl https://localhost:3000/file
 
 # With security
-curl https://localhost:3000/file?path=src/index.ts \
+curl https://localhost:3000/file \
   -H "Authorization: Bearer <token>"
 ```
 
@@ -115,13 +114,11 @@ curl https://localhost:3000/file?path=src/index.ts \
 
 | Status | Condition |
 |---|---|
-| `200` | File found, is ASCII, within size limit |
-| `400` | `path` query parameter missing |
+| `200` | File is readable, ASCII, within size limit |
 | `401` | Security enabled and token missing or invalid |
-| `403` | Path traversal detected (`../` escape attempt) |
-| `404` | File not found |
+| `404` | File no longer exists on disk |
 | `413` | File exceeds 512 KB (prism-code-editor performance limit) |
-| `422` | File contains non-ASCII bytes, or path is a directory |
+| `422` | File contains non-ASCII bytes |
 | `500` | Unexpected read error |
 
 > **Why 512 KB?** [prism-code-editor](https://github.com/jonpyt/prism-code-editor) starts to slow down beyond ~1000 LOC on most hardware. 512 KB gives comfortable headroom for that many lines.

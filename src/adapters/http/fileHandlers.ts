@@ -1,27 +1,17 @@
 import { Request, Response } from 'express';
 import { AppConfig } from '../../config/types';
-import { readFile } from '../../core/files';
+import { readAbsoluteFile } from '../../core/files';
 import { RouteHandler } from './types';
 
 export const makeFileHandler = (config: AppConfig): RouteHandler => {
-  return (req: Request, res: Response): void => {
-    const relativePath = req.query['path'];
-
-    if (!relativePath || typeof relativePath !== 'string') {
-      res.status(400).json({ error: 'Query parameter "path" is required' });
-      return;
-    }
-
-    const result = readFile(config.root, relativePath);
+  return (_req: Request, res: Response): void => {
+    const result = readAbsoluteFile(config.file);
 
     if (!result.ok) {
       const { error } = result;
       switch (error.kind) {
         case 'NOT_FOUND':
           res.status(404).json({ error: `File not found: ${error.path}` });
-          return;
-        case 'PATH_TRAVERSAL':
-          res.status(403).json({ error: 'Access denied: path traversal detected' });
           return;
         case 'NOT_ASCII':
           res.status(422).json({ error: 'File is not ASCII-encoded' });
@@ -36,6 +26,9 @@ export const makeFileHandler = (config: AppConfig): RouteHandler => {
           return;
         case 'READ_ERROR':
           res.status(500).json({ error: `Could not read file: ${error.message}` });
+          return;
+        case 'PATH_TRAVERSAL':
+          res.status(500).json({ error: 'Internal configuration error' });
           return;
       }
     }

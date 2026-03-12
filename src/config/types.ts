@@ -10,5 +10,5 @@ export type AppConfig = {
   keysDir: string;
   jwtPrivateKey: string | undefined;
   jwtPublicKey: string | undefined;
-  root: string;
+  file: string;
 };
