@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon",
     "build": "tsc",
-    "build:web": "cd src/web && npm run build",
+    "build:web": "cd web && npm run build",
     "build:all": "npm run build:web && npm run build",
     "postbuild": "chmod +x dist/bin.js",
     "build:watch": "tsc --watch",

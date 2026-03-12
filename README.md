@@ -212,9 +212,8 @@ src/
 │   └── files/     # file reading/writing, validation
 ├── adapters/      # cli (commander) + http (express) + logger (winston)
 ├── config/        # app configuration (AppConfig)
-├── web/           # browser UI (Vite + prism-code-editor, built to src/web/dist/)
 └── bin.ts         # CLI entry point (npx)
-web/               # legacy static directory (unused — served from src/web/dist/)
+web/               # browser UI (Vite + prism-code-editor, built to web/dist/)
 rest/              # REST Client .http scenario files (one per controller)
 logs/              # runtime logs (gitignored)
 ```
