@@ -12,6 +12,7 @@ Reusable agent skills live in `skills/`. Each skill is a self-contained instruct
 |---|---|---|
 | [`skills/update-readme.md`](./skills/update-readme.md) | Keep `README.md` in sync with the codebase | After every feature, domain change, new command, or API change |
 | [`skills/commit.md`](./skills/commit.md) | Create descriptive git commits | After every completed task, before closing work |
+| [`skills/status.md`](./skills/status.md) | Maintain the AI & Copilot usage disclosure in `README.md` | After any significant AI-generated contribution |
 
 **When you finish a task that changes any user-facing behaviour, always run the `update-readme` skill before closing the task. Then run the `commit` skill to commit the work.**
 
