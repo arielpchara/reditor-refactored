@@ -12,7 +12,13 @@ export const createApp = (config: AppConfig) => {
   logger.info('Initialising Express app', { useTls: config.useTls, file: config.file });
   const app = express();
   app.use(express.json());
-  app.use(express.static(path.resolve(process.cwd(), 'web/dist')));
+  // Resolve the browser UI assets directory.
+  // When compiled (dist/adapters/http/server.js): go up two levels → dist/web/
+  // When ts-node (src/adapters/http/server.ts):   use process.cwd()/dist/web
+  const webDir = __filename.endsWith('.ts')
+    ? path.resolve(process.cwd(), 'dist/web')
+    : path.resolve(__dirname, '../../web');
+  app.use(express.static(webDir));
 
   // HTTP access log — every inbound request
   app.use((req, _res, next) => {

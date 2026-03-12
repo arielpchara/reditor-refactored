@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Edit files from your server in the browser.",
   "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
   "bin": {
     "reditor": "dist/bin.js"
   },
@@ -10,6 +13,7 @@
     "dev": "nodemon",
     "build": "tsc",
     "build:web": "cd web && npm run build",
+    "prebuild:all": "node -e \"require('fs').rmSync('dist/web', {recursive:true, force:true})\"",
     "build:all": "npm run build:web && npm run build",
     "postbuild": "chmod +x dist/bin.js",
     "build:watch": "tsc --watch",
