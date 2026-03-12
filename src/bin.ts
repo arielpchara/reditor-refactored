@@ -4,9 +4,10 @@ import path from 'path';
 import fs from 'fs';
 import { buildProgram } from './adapters/cli/program';
 import { startServer } from './adapters/http';
-import { generateOtp, loadOrGenerateKeyPair } from './core/security';
+import { generateOtp, generateKeyPair, loadKeyPair, saveKeyPair } from './core/security';
 import { loadConfig } from './config';
 import { ServeOptions } from './adapters/cli/program';
+import { logger, logFilePath } from './adapters/logger';
 
 const program = buildProgram();
 program.parse(process.argv);
@@ -25,21 +26,21 @@ const opts = serveCmd?.opts<ServeOptions>() ?? {
 const rawFile: string | undefined = serveCmd?.args[0];
 
 if (!rawFile) {
-  console.error('Error: a file path is required.\n  Usage: reditor serve <file>');
+  logger.error('Missing required file path. Usage: reditor serve <file>');
   process.exit(1);
 }
 
 const absoluteFile = path.resolve(rawFile);
 
 if (!fs.existsSync(absoluteFile)) {
-  console.error(`Error: file not found — ${rawFile}`);
+  logger.error('Configured file not found', { file: rawFile, resolvedFile: absoluteFile });
   process.exit(1);
 }
 
 const fileStat = fs.statSync(absoluteFile);
 
 if (fileStat.isDirectory()) {
-  console.error(`Error: "${rawFile}" is a directory. Provide a file path, not a directory.`);
+  logger.error('Configured file path points to a directory', { file: rawFile });
   process.exit(1);
 }
 // ──────────────────────────────────────────────────────────────────────────
@@ -48,7 +49,22 @@ const isForced = opts.enableSecurity && opts.forceOtp !== undefined;
 const otp = opts.enableSecurity ? (opts.forceOtp ?? generateOtp()) : undefined;
 const tokenTtl = Number(opts.tokenTtl);
 
-const keyPair = opts.enableSecurity ? loadOrGenerateKeyPair(opts.keysDir) : undefined;
+if (otp) {
+  logger.info('OTP generated for session', { forced: isForced });
+}
+
+let keyPair: { privateKey: string; publicKey: string } | undefined;
+if (opts.enableSecurity) {
+  const existing = loadKeyPair(opts.keysDir);
+  if (existing) {
+    keyPair = existing;
+    logger.info('Loaded existing RSA signing keys', { keysDir: opts.keysDir });
+  } else {
+    keyPair = generateKeyPair();
+    saveKeyPair(keyPair, opts.keysDir);
+    logger.info('Generated new RSA-2048 signing keys', { keysDir: opts.keysDir });
+  }
+}
 
 const config = loadConfig({
   port: Number(opts.port),
@@ -63,20 +79,27 @@ const config = loadConfig({
 });
 
 if (config.securityEnabled && otp) {
-  console.log('');
+  logger.info('Security mode enabled', { tokenTtlSeconds: tokenTtl });
   if (isForced) {
-    console.log(
-      '  ⚠️  WARNING: --force-otp is set — OTP is predictable. Do NOT use in production!',
-    );
+    logger.warn('--force-otp is set; OTP is predictable and should never be used in production');
   }
-  console.log('  🔐 Security enabled');
-  console.log(`  🔑 One-Time Password: ${otp}`);
-  console.log(`  ⏱  Token TTL: ${tokenTtl}s`);
-  console.log('     POST /auth/exchange-token with { "otp": "<code>" } to get a JWT.');
-  console.log('');
+  process.stdout.write('\n');
+  process.stdout.write('  🔐 Security enabled\n');
+  process.stdout.write(`  🔑 One-Time Password: ${otp}\n`);
+  process.stdout.write(`  ⏱  Token TTL: ${tokenTtl}s\n`);
+  process.stdout.write('     POST /auth/exchange-token with { "otp": "<code>" } to get a JWT.\n');
+  process.stdout.write('\n');
 }
 
+logger.info('Starting reditor server', {
+  host: config.host,
+  port: config.port,
+  useTls: config.useTls,
+  file: config.file,
+  logFilePath,
+});
+
 startServer(config).catch((err: Error) => {
-  console.error('Failed to start server:', err.message);
+  logger.error('Failed to start server', { error: err.message, stack: err.stack });
   process.exit(1);
 });

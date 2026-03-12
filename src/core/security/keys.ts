@@ -34,11 +34,9 @@ export const loadKeyPair = (keysDir: string): KeyPair | undefined => {
 export const loadOrGenerateKeyPair = (keysDir: string): KeyPair => {
   const existing = loadKeyPair(keysDir);
   if (existing) {
-    console.log(`  🔑 Loaded existing signing keys from ${keysDir}`);
     return existing;
   }
   const keyPair = generateKeyPair();
   saveKeyPair(keyPair, keysDir);
-  console.log(`  🔑 Generated new RSA-2048 signing keys → ${keysDir}`);
   return keyPair;
 };

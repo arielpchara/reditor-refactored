@@ -125,6 +125,16 @@ export const add = (a: number, b: number): number => a + b;
 - Return types must be explicit on all exported functions
 - Use discriminated unions for results: `{ ok: true; value: T } | { ok: false; error: string }`
 
+### Error handling and logging
+
+- Use **custom error classes** extending `Error` for domain/application failures
+- Prefer explicit, named errors (example: `InvalidOTPError`) instead of generic `Error`
+- Keep error names specific to the failure context (`FileTooLargeError`, `FileNotAsciiError`, etc.)
+- Surface errors intentionally: map known errors to clear HTTP/CLI responses
+- Use **winston** as the project logger (no ad-hoc `console.log` for runtime logging)
+- Log important flow events, warnings, and failures — do not be shy about logging when it helps observability
+- Include actionable context in logs (endpoint, file path, status, error name/message), but never secrets/tokens
+
 ### Single Responsibility
 
 Each file has **one reason to change**:

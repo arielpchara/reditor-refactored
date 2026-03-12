@@ -1,6 +1,6 @@
 # reditor
 
-> Edit files from your server in the browser. Run `npx reditor serve` on any machine and access a web-based file editor from any browser — with optional HTTPS and OTP-secured access.
+> Edit files from your server in the browser. Run `npx reditor serve <file>` on any machine and access a web-based file editor from any browser — with optional HTTPS and OTP-secured access.
 
 ## Features
 
@@ -9,6 +9,7 @@
 - **JWT authentication** — exchange OTP for a signed RS256 JWT token
 - **Configurable token TTL** — default 5 minutes, customisable via CLI
 - **Persistent RSA signing keys** — generated once, reused across restarts
+- **Winston logging** — structured logs to console and `logs/reditor-<timestamp>.log`
 
 No file-editing UI yet. Add your first module under `src/core/<domain>/`.
 
@@ -155,6 +156,12 @@ npm run format        # auto-format with Prettier
 npm run typecheck     # TypeScript type-check without emit
 ```
 
+Runtime logs are written to:
+
+```bash
+logs/reditor-<ISO_TIMESTAMP>.log
+```
+
 ## Architecture
 
 This project follows **Hexagonal Architecture** (Ports & Adapters).
@@ -165,11 +172,12 @@ src/
 ├── core/
 │   ├── security/  # OTP generation, RSA key pair, JWT signing
 │   └── files/     # file reading, ASCII validation, size validation
-├── adapters/      # cli (commander) + http (express)
+├── adapters/      # cli (commander) + http (express) + logger (winston)
 ├── config/        # app configuration (AppConfig)
 └── bin.ts         # CLI entry point (npx)
 web/               # browser UI (served as static files)
 rest/              # REST Client .http scenario files (one per controller)
+logs/              # runtime logs (gitignored)
 ```
 
 ## ⚠️ AI & Copilot Usage
