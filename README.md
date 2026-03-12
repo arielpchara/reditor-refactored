@@ -31,7 +31,7 @@ npx reditor serve <file> [options]
 | `<file>` | **required** | Path to the file to edit in the browser |
 | `-p, --port <port>` | `3000` | Port the server listens on |
 | `-H, --host <host>` | `localhost` | Host the server binds to |
-| `--enable-security` | `false` | Enable HTTPS, OTP, and JWT authentication |
+| `--force-disable-security` | `false` | **[DANGER]** Disable OTP and JWT auth — anyone on the network can read the file |
 | `--token-ttl <seconds>` | `300` | JWT token time-to-live in seconds |
 | `--keys-dir <path>` | `.reditor/keys` | Directory to store RSA signing key pair |
 | `--force-otp <otp>` | — | **[TEST ONLY]** Override the generated OTP with a fixed value |
@@ -40,19 +40,22 @@ npx reditor serve <file> [options]
 ### Examples
 
 ```bash
-# Edit a file (plain HTTP)
+# Edit a file (OTP + JWT security enabled by default)
 npx reditor serve ./config/server.conf
 
 # Edit a file on a custom port
 npx reditor serve ./config/server.conf --port 8080
 
-# Edit a file with HTTPS + OTP security and 10-minute tokens
-npx reditor serve ./config/server.conf --enable-security --token-ttl 600
+# Edit a file with security DISABLED (dangerous — use only on trusted networks)
+npx reditor serve ./config/server.conf --force-disable-security
+
+# Edit a file with a 10-minute token TTL
+npx reditor serve ./config/server.conf --token-ttl 600
 ```
 
-> If `<file>` is omitted or the path does not exist or is a directory, the program prints an error and exits without starting the server.
+> **Startup validation:** if `<file>` is omitted, not found, is a directory, exceeds 512 KB, or contains binary content, the program logs a descriptive error and exits before starting the server.
 
-When `--enable-security` is set, startup output includes:
+When security is active (default), startup output includes:
 
 ```
   🔐 Security enabled
@@ -126,7 +129,9 @@ curl https://localhost:3000/file \
 
 ## Security
 
-When `--enable-security` is used:
+Security (OTP + JWT) is **enabled by default**. Use `--force-disable-security` only on isolated, trusted networks.
+
+When security is active:
 
 1. An **RSA-2048 key pair** is generated (or loaded if it already exists) from `--keys-dir`.
 2. A **6-digit OTP** is generated using `crypto.randomInt` (cryptographically secure).
