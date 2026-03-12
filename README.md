@@ -4,10 +4,11 @@
 
 ## Features
 
-- **Browser file editor** — full-screen `prism-code-editor` with syntax highlighting auto-detected from file extension
+- **Browser file editor** — React-based UI with `prism-code-editor` and syntax highlighting auto-detected from file extension
 - **Save from the browser** — edit and save changes back to the server with a single click
 - **HTTPS server** with auto-generated self-signed certificate
-- **OTP-secured access** — prints a one-time password at startup
+- **Browser OTP dialog** — terminal-styled centred dialog at startup; shows attempt counter (N/3), loading spinner during exchange, error on failure, and fatal screen after 3 bad attempts
+- **OTP rate limiting** — server crashes (`process.exit(1)`) after 3 failed OTP attempts, preventing brute-force access
 - **JWT authentication** — exchange OTP for a signed RS256 JWT token
 - **Configurable token TTL** — default 5 minutes, customisable via CLI
 - **Persistent RSA signing keys** — generated once, reused across restarts
@@ -69,16 +70,16 @@ When security is active (default), startup output includes:
 
 ### `GET /health`
 
-Returns `{ "status": "ok" }` when the server is running.
+Returns server status and whether security is enabled. Always accessible — no auth required. Used by the browser UI to decide whether to show the OTP dialog.
 
 ```bash
 curl https://localhost:3000/health
-# → {"status":"ok"}
+# → {"status":"ok","securityEnabled":true}
 ```
 
-### `POST /auth/exchange-token` *(requires `--enable-security`)*
+### `POST /auth/exchange-token` *(only registered when security is enabled)*
 
-Exchange the OTP printed at startup for a signed RS256 JWT token.
+Exchange the OTP printed at startup for a signed RS256 JWT token. After **3 failed attempts** the server logs a fatal error and exits, preventing brute-force access.
 
 **Request:**
 
@@ -96,7 +97,7 @@ Exchange the OTP printed at startup for a signed RS256 JWT token.
 
 | Status | Reason |
 |---|---|
-| `401` | Missing or incorrect OTP |
+| `401` | Missing or incorrect OTP (`attemptsLeft` field shows remaining tries) |
 | `403` | Security is not enabled |
 | `500` | Signing key not available |
 
@@ -185,12 +186,12 @@ Environment variables (all optional — CLI flags take precedence):
 
 ```bash
 npm run dev           # start server with live reload (nodemon + ts-node)
-npm run build:web     # build the browser UI (src/web/ → src/web/dist/)
+npm run build:web     # build the browser UI (web/ → dist/web/)
 npm run build         # compile TypeScript → dist/
 npm run build:all     # build:web then build (full production build)
 npm test              # run unit tests
 npm run test:coverage # tests + coverage report
-npm run format        # auto-format with Prettier
+npm run test:web      # run web UI unit tests (Vitest + jsdom)
 npm run typecheck     # TypeScript type-check without emit
 ```
 
@@ -213,7 +214,7 @@ src/
 ├── adapters/      # cli (commander) + http (express) + logger (winston)
 ├── config/        # app configuration (AppConfig)
 └── bin.ts         # CLI entry point (npx)
-web/               # browser UI (Vite + prism-code-editor, built to web/dist/)
+web/               # browser UI (React + Vite + prism-code-editor, built to dist/web/)
 rest/              # REST Client .http scenario files (one per controller)
 logs/              # runtime logs (gitignored)
 ```
@@ -231,9 +232,9 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 
 | Metric | Value |
 |---|---|
-| Total AI sessions | 2 |
-| Total AI time | ~4h |
-| AI commits | 6 |
+| Total AI sessions | 3 |
+| Total AI time | ~6h |
+| AI commits | 8 |
 | Models used | Claude Sonnet 4.6 (`claude-sonnet-4.6`) via GitHub Copilot CLI |
 | Tokens (input / output) | Not available from the GitHub Copilot CLI interface |
 | Last session | 2026-03-12 |
@@ -242,6 +243,7 @@ This project was built with the assistance of **GitHub Copilot** and other AI to
 
 | Date | Model | Duration | Commits | Summary |
 |---|---|---|---|---|
+| 2026-03-12 | Claude Sonnet 4.6 | ~2h | 2 | Security UI: terminal-styled OTP dialog (3 retries, spinner, fatal screen), server OTP rate-limit + crash after 3 failures, `securityEnabled` in `/health`, Vitest + jsdom tests for web module |
 | 2026-03-12 | Claude Sonnet 4.6 | 2h 22m | 4 | Full project bootstrap: scaffold, Hexagonal Architecture, Express HTTPS server, CLI with commander.js, `--enable-security` OTP, git hooks, agent skills |
 | 2026-03-12 | Claude Sonnet 4.6 | ~1.5h | 2 | Security feature: `POST /auth/exchange-token`, RSA-2048 key pair generation, RS256 JWT signing, `--token-ttl`, `--keys-dir` CLI params, 23 unit tests |
 

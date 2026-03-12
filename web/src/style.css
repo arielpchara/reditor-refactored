@@ -1,3 +1,32 @@
+/* ─── prism-code-editor github-dark design tokens ────────────────────────── */
+/*
+ * Mirrors the CSS custom properties defined on .prism-code-editor by
+ * prism-code-editor/dist/themes/github-dark.css, promoted to :root so every
+ * UI surface (toolbar, OTP dialog) shares the exact same design language as
+ * the code editor.
+ */
+:root {
+  --editor__bg: #0d1117;
+  --widget__bg: #161b22;
+  --widget__border: #303741;
+  --widget__color: #b8bfc7;
+  --widget__color-active: #e6edf3;
+  --widget__color-options: #7d8590;
+  --widget__bg-input: #0d1117;
+  --widget__focus-ring: #007acc;
+  --editor__line-number: #6e7681;
+  --editor__font: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  /* Semantic / status tokens */
+  --color-success: #238636;
+  --color-success-hover: #2ea043;
+  --color-success-muted: #21262d;
+  --color-success-text: #3fb950;
+  --color-danger: #f85149;
+  --color-danger-bg: rgba(248, 81, 73, 0.08);
+  --color-accent: #58a6ff;
+  --widget__border-subtle: #21262d;
+}
+
 *,
 *::before,
 *::after {
@@ -11,8 +40,8 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background: #0d1117;
-  color: #e6edf3;
+  background: var(--editor__bg);
+  color: var(--widget__color-active);
   font-family: system-ui, sans-serif;
 }
 
@@ -22,14 +51,14 @@ body {
   gap: 0.75rem;
   height: 40px;
   padding: 0 1rem;
-  background: #161b22;
-  border-bottom: 1px solid #30363d;
+  background: var(--widget__bg);
+  border-bottom: 1px solid var(--widget__border);
   flex-shrink: 0;
 }
 
 #filename {
   font-size: 0.85rem;
-  color: #8b949e;
+  color: var(--widget__color-options);
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -38,7 +67,7 @@ body {
 
 #save-btn {
   padding: 0.25rem 0.75rem;
-  background: #238636;
+  background: var(--color-success);
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -49,12 +78,12 @@ body {
 }
 
 #save-btn:hover:not(:disabled) {
-  background: #2ea043;
+  background: var(--color-success-hover);
 }
 
 #save-btn:disabled {
-  background: #21262d;
-  color: #484f58;
+  background: var(--color-success-muted);
+  color: var(--editor__line-number);
   cursor: not-allowed;
 }
 
@@ -65,11 +94,11 @@ body {
 }
 
 #status.ok {
-  color: #3fb950;
+  color: var(--color-success-text);
 }
 
 #status.error {
-  color: #f85149;
+  color: var(--color-danger);
 }
 
 #editor-container {
@@ -82,4 +111,150 @@ body {
 /* prism-code-editor needs display:grid on its container */
 #editor-container > * {
   height: 100%;
+}
+
+/* ─── OTP Overlay ─────────────────────────────────────────────────────────── */
+
+#otp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(13, 17, 23, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-dialog {
+  font-family: var(--editor__font);
+  background: var(--widget__bg);
+  border: 1px solid var(--widget__border);
+  border-radius: 6px;
+  padding: 1.75rem 2rem;
+  min-width: 360px;
+  max-width: 92vw;
+  color: var(--widget__color);
+  box-shadow:
+    0 8px 24px rgba(1, 4, 9, 0.6),
+    0 0 0 1px var(--widget__border-subtle);
+}
+
+.otp-title {
+  font-size: 0.78rem;
+  color: var(--widget__color-options);
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  border-bottom: 1px solid var(--widget__border-subtle);
+  padding-bottom: 0.75rem;
+}
+
+.otp-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.4rem;
+}
+
+.otp-label {
+  font-size: 0.85rem;
+  color: var(--widget__color-active);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.otp-input {
+  flex: 1;
+  background: var(--widget__bg-input);
+  border: 1px solid var(--widget__border);
+  border-radius: 4px;
+  color: var(--widget__color-active);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.6rem;
+  outline: none;
+  caret-color: var(--color-accent);
+  letter-spacing: 0.2em;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.otp-input:focus {
+  border-color: var(--widget__focus-ring);
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.25);
+}
+
+.otp-input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.otp-attempt {
+  font-size: 0.72rem;
+  color: var(--editor__line-number);
+  margin-top: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+
+.otp-error {
+  font-size: 0.78rem;
+  color: var(--color-danger);
+  min-height: 1.1rem;
+  margin-bottom: 0.75rem;
+  background: var(--color-danger-bg);
+  border-radius: 3px;
+  padding: 0 0.35rem;
+  line-height: 1.4rem;
+}
+
+.otp-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.otp-submit {
+  background: var(--color-success);
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.otp-submit:hover {
+  background: var(--color-success-hover);
+}
+
+/* Spinner — uses the editor's accent blue */
+.otp-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--widget__border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: otp-spin 0.65s linear infinite;
+}
+
+@keyframes otp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fatal screen */
+.otp-fatal-title {
+  color: var(--color-danger);
+  margin-bottom: 1rem;
+}
+
+.otp-fatal-msg {
+  font-size: 0.82rem;
+  color: var(--widget__color-options);
+  line-height: 1.7;
 }
