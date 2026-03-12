@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+echo "🔍 [pre-commit] Running spell check and format check on staged files..."
+npx lint-staged
+
+echo "🔷 [pre-commit] Running TypeScript syntax check..."
+npm run typecheck
+
+echo "🧪 [pre-commit] Running unit tests..."
+npm test
+
+echo "✅ [pre-commit] All checks passed."

@@ -1,0 +1,35 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "files": ["src/**/*.ts", "web/**/*.html", "*.md", "skills/**/*.md"],
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "package-lock.json",
+    "*.json"
+  ],
+  "words": [
+    "pems",
+    "reditor",
+    "pchara",
+    "selfsigned",
+    "mkcert",
+    "noEmit",
+    "esmodule",
+    "commonjs",
+    "tsconfig",
+    "nodemon",
+    "outdir",
+    "rootdir",
+    "husky",
+    "cspell",
+    "mkdir",
+    "chmod",
+    "skilss",
+    "skilss",
+    "OTP",
+    "HTTPS",
+    "npx"
+  ]
+}
