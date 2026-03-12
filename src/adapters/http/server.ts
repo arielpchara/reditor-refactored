@@ -12,7 +12,7 @@ export const createApp = (config: AppConfig) => {
   logger.info('Initialising Express app', { useTls: config.useTls, file: config.file });
   const app = express();
   app.use(express.json());
-  app.use(express.static(path.resolve(process.cwd(), 'web')));
+  app.use(express.static(path.resolve(process.cwd(), 'src/web/dist')));
 
   // HTTP access log — every inbound request
   app.use((req, _res, next) => {

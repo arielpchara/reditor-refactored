@@ -4,6 +4,8 @@ import { logger } from '../logger';
 import { healthHandler } from './handlers';
 import { makeExchangeTokenHandler } from './authHandlers';
 import { makeFileHandler } from './fileHandlers';
+import { makeFileSaveHandler } from './fileSaveHandler';
+import { makeFileMetaHandler } from './fileMetaHandler';
 import { makeAuthMiddleware } from './authMiddleware';
 
 export const registerRoutes = (app: Express, config: AppConfig): void => {
@@ -16,9 +18,16 @@ export const registerRoutes = (app: Express, config: AppConfig): void => {
   }
 
   const auth = makeAuthMiddleware(config);
-  app.get('/raw', auth, makeFileHandler(config));
-  logger.info('Registered route: GET /raw', {
+
+  app.get('/file-meta', auth, makeFileMetaHandler(config));
+  logger.info('Registered route: GET /file-meta', { authRequired: config.securityEnabled });
+
+  app.get('/file', auth, makeFileHandler(config));
+  logger.info('Registered route: GET /file', {
     authRequired: config.securityEnabled,
     file: config.file,
   });
+
+  app.put('/file', auth, makeFileSaveHandler(config));
+  logger.info('Registered route: PUT /file', { authRequired: config.securityEnabled });
 };

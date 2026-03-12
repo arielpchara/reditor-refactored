@@ -4,14 +4,15 @@
 
 ## Features
 
+- **Browser file editor** — full-screen `prism-code-editor` with syntax highlighting auto-detected from file extension
+- **Save from the browser** — edit and save changes back to the server with a single click
 - **HTTPS server** with auto-generated self-signed certificate
 - **OTP-secured access** — prints a one-time password at startup
 - **JWT authentication** — exchange OTP for a signed RS256 JWT token
 - **Configurable token TTL** — default 5 minutes, customisable via CLI
 - **Persistent RSA signing keys** — generated once, reused across restarts
 - **Winston logging** — structured logs to console and `logs/reditor-<timestamp>.log`
-
-No file-editing UI yet. Add your first module under `src/core/<domain>/`.
+- **Startup file validation** — fails fast with a descriptive error if the file is missing, a directory, too large, or binary
 
 ## Installation
 
@@ -101,6 +102,17 @@ Exchange the OTP printed at startup for a signed RS256 JWT token.
 
 Use the returned `token` as a `Bearer` header for subsequent requests.
 
+### `GET /file-meta`
+
+Returns metadata about the configured file. Used by the browser UI to set the editor language and title.
+
+```bash
+curl https://localhost:3000/file-meta
+# → {"filename":"server.conf"}
+```
+
+**Errors:** `401` when security is enabled and the token is missing or invalid.
+
 ### `GET /file`
 
 Returns the raw content of the file configured at startup (`<file>` argument). Requires a valid JWT in the `Authorization` header when `--enable-security` is active.
@@ -126,6 +138,25 @@ curl https://localhost:3000/file \
 | `500` | Unexpected read error |
 
 > **Why 512 KB?** [prism-code-editor](https://github.com/jonpyt/prism-code-editor) starts to slow down beyond ~1000 LOC on most hardware. 512 KB gives comfortable headroom for that many lines.
+
+### `PUT /file`
+
+Saves new content back to the file on disk. Requires a valid JWT when security is enabled. Returns `204 No Content` on success.
+
+**Request:**
+
+```json
+{ "content": "updated file text…" }
+```
+
+**Errors:**
+
+| Status | Condition |
+|---|---|
+| `400` | `content` field missing or not a string |
+| `401` | Security enabled and token missing or invalid |
+| `413` | Content exceeds 512 KB |
+| `500` | Unexpected write error |
 
 ## Security
 
@@ -154,9 +185,11 @@ Environment variables (all optional — CLI flags take precedence):
 
 ```bash
 npm run dev           # start server with live reload (nodemon + ts-node)
+npm run build:web     # build the browser UI (src/web/ → src/web/dist/)
+npm run build         # compile TypeScript → dist/
+npm run build:all     # build:web then build (full production build)
 npm test              # run unit tests
 npm run test:coverage # tests + coverage report
-npm run build         # compile TypeScript → dist/
 npm run format        # auto-format with Prettier
 npm run typecheck     # TypeScript type-check without emit
 ```
@@ -176,11 +209,12 @@ See [AGENTS.md](./AGENTS.md) for full conventions and contribution guidelines.
 src/
 ├── core/
 │   ├── security/  # OTP generation, RSA key pair, JWT signing
-│   └── files/     # file reading, ASCII validation, size validation
+│   └── files/     # file reading/writing, validation
 ├── adapters/      # cli (commander) + http (express) + logger (winston)
 ├── config/        # app configuration (AppConfig)
+├── web/           # browser UI (Vite + prism-code-editor, built to src/web/dist/)
 └── bin.ts         # CLI entry point (npx)
-web/               # browser UI (served as static files)
+web/               # legacy static directory (unused — served from src/web/dist/)
 rest/              # REST Client .http scenario files (one per controller)
 logs/              # runtime logs (gitignored)
 ```

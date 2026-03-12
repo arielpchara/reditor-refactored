@@ -3,8 +3,8 @@
 # Use the REST Client VS Code extension to run these requests.
 #
 # Start server with a file:
-#   No security:  npx reditor serve /path/to/your/file.ts
-#   With security: npx reditor serve /path/to/your/file.ts --enable-security
+#   With security (default): npx reditor serve /path/to/your/file.ts
+#   No security:             npx reditor serve /path/to/your/file.ts --force-disable-security
 #
 # When security is enabled, exchange an OTP for a token first (see auth.http),
 # then paste the token into @token below.
@@ -14,47 +14,83 @@
 @baseUrl = https://{{host}}:{{port}}
 @token = <paste JWT token here>
 
-### Read the configured file — success (no security)
+### GET /file-meta — filename info (no security)
+# Expected: 200 { "filename": "your-file.ts" }
+GET {{baseUrl}}/file-meta
+
+###
+
+### GET /file-meta — with JWT (security enabled)
+# Expected: 200 { "filename": "your-file.ts" }
+GET {{baseUrl}}/file-meta
+Authorization: Bearer {{token}}
+
+###
+
+### GET /file — read file content (no security)
 # Expected: 200 raw text content of the file passed at startup
 GET {{baseUrl}}/file
 
 ###
 
-### Read the configured file — success (with JWT)
+### GET /file — read file content (with JWT)
 # Expected: 200 raw text content
 GET {{baseUrl}}/file
 Authorization: Bearer {{token}}
 
 ###
 
-### Read the configured file — no longer exists on disk
-# Expected: 404 {"error":"File not found: /path/to/file"}
-# (delete the file from disk while the server is running to reproduce)
-GET {{baseUrl}}/file
+### PUT /file — save edited content (no security)
+# Expected: 204 No Content
+PUT {{baseUrl}}/file
+Content-Type: application/json
+
+{
+  "content": "// edited content\nconsole.log('hello');\n"
+}
 
 ###
 
-### Read the configured file — not ASCII
-# Expected: 422 {"error":"File is not ASCII-encoded"}
-# (start server with: npx reditor serve /path/to/binary.bin)
-GET {{baseUrl}}/file
+### PUT /file — save edited content (with JWT)
+# Expected: 204 No Content
+PUT {{baseUrl}}/file
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "content": "// edited content\nconsole.log('hello');\n"
+}
 
 ###
 
-### Read the configured file — too large for editor (>512 KB)
-# Expected: 413 {"error":"File too large for editor (... bytes, max 524288 bytes)"}
-# (start server with: npx reditor serve /path/to/large-file.log)
-GET {{baseUrl}}/file
+### PUT /file — content too large (>512 KB)
+# Expected: 413 {"error":"Content too large (... bytes, max 524288 bytes)"}
+# (send a body with content larger than 512 KB to reproduce)
+PUT {{baseUrl}}/file
+Content-Type: application/json
+
+{
+  "content": "<512 KB+ string here>"
+}
 
 ###
 
-### Read the configured file — no auth token when security is enabled
+### PUT /file — missing content field
+# Expected: 400 {"error":"Request body must contain a \"content\" string field"}
+PUT {{baseUrl}}/file
+Content-Type: application/json
+
+{}
+
+###
+
+### GET /file — no auth token when security is enabled
 # Expected: 401 {"error":"Authorization header missing or malformed"}
 GET {{baseUrl}}/file
 
 ###
 
-### Read the configured file — invalid JWT token
+### GET /file — invalid JWT token
 # Expected: 401 {"error":"Invalid or expired token"}
 GET {{baseUrl}}/file
 Authorization: Bearer invalid.token.here

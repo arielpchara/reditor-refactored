@@ -24,3 +24,9 @@ export type FileResult =
 
 /** Result of startup file validation — no content returned, just success/failure. */
 export type FileValidationResult = { ok: true } | { ok: false; error: FileValidationError };
+
+export type FileWriteError =
+  | { kind: 'WRITE_ERROR'; path: string; message: string }
+  | { kind: 'TOO_LARGE'; path: string; sizeBytes: number; maxBytes: number };
+
+export type FileWriteResult = { ok: true } | { ok: false; error: FileWriteError };
