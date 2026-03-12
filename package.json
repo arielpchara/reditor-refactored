@@ -14,7 +14,6 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "bdd": "cucumber-js",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
@@ -35,8 +34,6 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "@cucumber/cucumber": "^12.7.0",
-    "@cucumber/pretty-formatter": "^3.2.0",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.5.0",

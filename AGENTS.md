@@ -73,7 +73,7 @@ bin.ts → config        ✅
 | `npm test` | Run all unit tests |
 | `npm run test:coverage` | Tests + coverage report |
 | `npm run format` | Auto-format with Prettier |
-| `npm run bdd` | Run Cucumber BDD scenarios |
+| `npm run test:coverage` | Tests + coverage report |
 
 ### CLI usage (after build)
 ```bash
@@ -165,7 +165,6 @@ Always run `npm run format` before finishing.
 ## Testing
 
 - Framework: **Jest** with **ts-jest**
-- BDD scenarios: **Cucumber.js** (`features/`)
 - Test files live in `src/__tests__/` mirroring the `src/` structure:
 
 ```

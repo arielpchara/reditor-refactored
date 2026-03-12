@@ -78,7 +78,7 @@ npm test              # run unit tests
 npm run test:coverage # tests + coverage report
 npm run build         # compile TypeScript → dist/
 npm run format        # auto-format with Prettier
-npm run bdd           # run Cucumber BDD scenarios
+npm run test:coverage # tests + coverage report
 ```
 
 ## Architecture
