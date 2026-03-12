@@ -33,5 +33,6 @@ export const makeAuthMiddleware =
       return;
     }
 
+    logger.debug('Request authorized via JWT', { path: req.path, ip: req.ip });
     next();
   };
