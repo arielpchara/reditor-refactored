@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 import path from 'path';
-import fs from 'fs';
 import { buildProgram } from './adapters/cli/program';
 import { startServer } from './adapters/http';
 import { generateOtp, generateKeyPair, loadKeyPair, saveKeyPair } from './core/security';
 import { loadConfig } from './config';
 import { ServeOptions } from './adapters/cli/program';
 import { logger, logFilePath } from './adapters/logger';
+import { validateFile } from './core/files';
 
 const program = buildProgram();
 program.parse(process.argv);
@@ -31,16 +31,36 @@ if (!rawFile) {
 }
 
 const absoluteFile = path.resolve(rawFile);
+const validation = validateFile(absoluteFile);
 
-if (!fs.existsSync(absoluteFile)) {
-  logger.error('Configured file not found', { file: rawFile, resolvedFile: absoluteFile });
-  process.exit(1);
-}
-
-const fileStat = fs.statSync(absoluteFile);
-
-if (fileStat.isDirectory()) {
-  logger.error('Configured file path points to a directory', { file: rawFile });
+if (!validation.ok) {
+  const { error } = validation;
+  switch (error.kind) {
+    case 'NOT_FOUND':
+      logger.error('File not found', { file: absoluteFile });
+      break;
+    case 'IS_DIRECTORY':
+      logger.error('Path points to a directory, not a file', { file: absoluteFile });
+      break;
+    case 'TOO_LARGE':
+      logger.error('File exceeds maximum size for editor', {
+        file: absoluteFile,
+        sizeBytes: error.sizeBytes,
+        maxBytes: error.maxBytes,
+      });
+      break;
+    case 'NOT_TEXT':
+      logger.error('File is not readable as text (binary content detected)', {
+        file: absoluteFile,
+      });
+      break;
+    case 'READ_ERROR':
+      logger.error('Could not read file', { file: absoluteFile, error: error.message });
+      break;
+    case 'PATH_TRAVERSAL':
+      logger.error('Path traversal detected', { file: absoluteFile });
+      break;
+  }
   process.exit(1);
 }
 // ──────────────────────────────────────────────────────────────────────────

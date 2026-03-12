@@ -21,3 +21,6 @@ export type FileValidationError =
 export type FileResult =
   | { ok: true; file: FileContent }
   | { ok: false; error: FileValidationError };
+
+/** Result of startup file validation — no content returned, just success/failure. */
+export type FileValidationResult = { ok: true } | { ok: false; error: FileValidationError };

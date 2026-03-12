@@ -16,8 +16,8 @@ export const registerRoutes = (app: Express, config: AppConfig): void => {
   }
 
   const auth = makeAuthMiddleware(config);
-  app.get('/file', auth, makeFileHandler(config));
-  logger.info('Registered route: GET /file', {
+  app.get('/raw', auth, makeFileHandler(config));
+  logger.info('Registered route: GET /raw', {
     authRequired: config.securityEnabled,
     file: config.file,
   });
