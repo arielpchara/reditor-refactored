@@ -30,3 +30,7 @@ export type FileWriteError =
   | { kind: 'TOO_LARGE'; path: string; sizeBytes: number; maxBytes: number };
 
 export type FileWriteResult = { ok: true } | { ok: false; error: FileWriteError };
+
+export type FileCreateError = { kind: 'CREATE_ERROR'; path: string; message: string };
+
+export type FileCreateResult = { ok: true } | { ok: false; error: FileCreateError };

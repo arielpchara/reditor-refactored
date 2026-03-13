@@ -67,4 +67,14 @@ describe('parseServeCommand', () => {
     const { opts } = parseServeCommand(argv('myfile.ts', '--port', '4000'));
     expect(opts.forceOtp).toBeUndefined();
   });
+
+  it('parses --create as true', () => {
+    const { opts } = parseServeCommand(argv('myfile.ts', '--create'));
+    expect(opts.create).toBe(true);
+  });
+
+  it('defaults create to false when flag is absent', () => {
+    const { opts } = parseServeCommand(argv('myfile.ts'));
+    expect(opts.create).toBe(false);
+  });
 });

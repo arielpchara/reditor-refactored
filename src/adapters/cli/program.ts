@@ -7,6 +7,7 @@ export type ServeOptions = {
   tokenTtl: string;
   keysDir: string;
   forceOtp: string | undefined;
+  create: boolean;
 };
 
 export type ParsedServeCommand = {
@@ -33,6 +34,7 @@ export const buildProgram = (): Command => {
     .option('--token-ttl <seconds>', 'JWT token time-to-live in seconds', '300')
     .option('--keys-dir <path>', 'Directory to store RSA signing keys', '.reditor/keys')
     .option('--force-otp <otp>', '[TEST ONLY] Override the generated OTP with a fixed value')
+    .option('--create', 'Create the file if it does not exist (prompts for confirmation)', false)
     .action(() => {
       // action is handled in bin.ts to keep this file pure/testable
     });
@@ -51,6 +53,7 @@ export const parseServeCommand = (argv: string[]): ParsedServeCommand => {
     tokenTtl: '300',
     keysDir: '.reditor/keys',
     forceOtp: undefined,
+    create: false,
   };
   const file: string | undefined = cmd?.args[0];
   return { opts, file };
