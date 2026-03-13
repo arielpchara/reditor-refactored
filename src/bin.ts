@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 import path from 'path';
 import { buildProgram } from './adapters/cli/program';
 import { startServer } from './adapters/http';
