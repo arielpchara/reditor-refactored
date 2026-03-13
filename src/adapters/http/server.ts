@@ -1,24 +1,18 @@
 import express from 'express';
 import https from 'https';
 import http from 'http';
-import path from 'path';
 import fs from 'fs';
 import selfsigned from 'selfsigned';
 import { AppConfig } from '../../config/types';
 import { registerRoutes } from './routes';
 import { logger } from '../logger';
+import { createStaticHandler } from './staticHandler';
 
 export const createApp = (config: AppConfig) => {
   logger.info('Initialising Express app', { useTls: config.useTls, file: config.file });
   const app = express();
   app.use(express.json());
-  // Resolve the browser UI assets directory.
-  // When compiled (dist/adapters/http/server.js): go up two levels → dist/web/
-  // When ts-node (src/adapters/http/server.ts):   use process.cwd()/dist/web
-  const webDir = __filename.endsWith('.ts')
-    ? path.resolve(process.cwd(), 'dist/web')
-    : path.resolve(__dirname, '../../web');
-  app.use(express.static(webDir));
+  app.use(createStaticHandler());
 
   // HTTP access log — every inbound request
   app.use((req, _res, next) => {
