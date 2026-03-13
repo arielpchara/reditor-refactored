@@ -16,6 +16,7 @@ const shared = {
   format: 'cjs',
   packages: 'external',
   target: 'node18',
+  minify:true
 };
 
 if (watch) {
