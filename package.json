@@ -54,7 +54,6 @@
     "lint-staged": "^16.3.3",
     "nodemon": "^3.1.14",
     "prettier": "^3.8.1",
-    "selfsigned": "^5.5.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
@@ -64,6 +63,7 @@
     "commander": "^14.0.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "winston": "^3.19.0"
+    "winston": "^3.19.0",
+    "selfsigned": "^5.5.0"
   }
 }
