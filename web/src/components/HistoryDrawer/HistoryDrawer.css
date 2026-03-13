@@ -1,0 +1,199 @@
+/* ── Backdrop ────────────────────────────────────────────────── */
+
+.history__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  animation: history-fade-in 0.2s ease;
+}
+
+@keyframes history-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Drawer panel ────────────────────────────────────────────── */
+
+.history {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 272px;
+  z-index: 201;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--widget__bg);
+  border-left: 1px solid var(--widget__border);
+  box-shadow:
+    -12px 0 40px rgba(0, 0, 0, 0.55),
+    -1px 0 0 rgba(255, 255, 255, 0.03);
+
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.history--open {
+  transform: translateX(0);
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
+
+.history__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--toolbar-height);
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid var(--widget__border);
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.history__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--widget__color);
+}
+
+.history__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--widget__color-options);
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.history__close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--widget__border);
+  color: var(--widget__color-active);
+}
+
+/* ── Version list ────────────────────────────────────────────── */
+
+.history__list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 8px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--widget__border) transparent;
+}
+
+.history__empty {
+  padding: 32px 16px;
+  font-size: 0.78rem;
+  color: var(--widget__color-options);
+  text-align: center;
+}
+
+/* ── Version item ────────────────────────────────────────────── */
+
+.history__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px 8px 16px;
+  border-left: 2px solid transparent;
+  transition: background 0.15s;
+}
+
+.history__item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.history__item--current {
+  border-left-color: var(--color-accent);
+  background: rgba(88, 166, 255, 0.04);
+}
+
+.history__item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.history__item-time {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--widget__color);
+  white-space: nowrap;
+}
+
+.history__badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 100px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(88, 166, 255, 0.12);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  color: var(--color-accent);
+}
+
+.history__hash {
+  font-size: 0.67rem;
+  font-family: var(--editor__font);
+  color: var(--widget__color-options);
+  letter-spacing: 0.04em;
+}
+
+/* ── Restore button ──────────────────────────────────────────── */
+
+.history__restore {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  height: 22px;
+  background: transparent;
+  color: var(--widget__color-options);
+  border: 1px solid var(--widget__border-subtle);
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s,
+    box-shadow 0.15s;
+}
+
+.history__restore:hover:not(:disabled) {
+  background: rgba(88, 166, 255, 0.08);
+  border-color: rgba(88, 166, 255, 0.4);
+  color: var(--color-accent);
+  box-shadow: 0 0 8px rgba(88, 166, 255, 0.2);
+}
+
+.history__restore:disabled {
+  opacity: 0.4;
+  cursor: default;
+  border-color: transparent;
+}

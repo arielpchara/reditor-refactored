@@ -18,6 +18,7 @@ import { basicEditor } from 'prism-code-editor/setups';
 
 export type EditorHandle = {
   getValue: () => string;
+  setValue: (content: string) => void;
 };
 
 export type EditorProps = {
@@ -49,6 +50,9 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
 
   useImperativeHandle(ref, () => ({
     getValue: () => editorInstanceRef.current?.value ?? '',
+    setValue: (content: string) => {
+      if (editorInstanceRef.current) editorInstanceRef.current.setOptions({ value: content });
+    },
   }));
 
   return <div ref={containerRef} className="editor" />;

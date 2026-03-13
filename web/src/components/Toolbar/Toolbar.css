@@ -116,6 +116,64 @@
   cursor: wait;
 }
 
+/* ── History button ──────────────────────────────────────────── */
+
+.toolbar__history {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  margin-right: 4px;
+  flex-shrink: 0;
+
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: var(--widget__color-options);
+  cursor: pointer;
+
+  transition:
+    background 0.15s,
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.toolbar__history:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--widget__border);
+  color: var(--widget__color-active);
+}
+
+/* Tooltip */
+.toolbar__tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #1c2128;
+  border: 1px solid var(--widget__border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--widget__color);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  z-index: 300;
+}
+
+.toolbar__history:hover .toolbar__tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ── Keyboard shortcut badge ─────────────────────────────────── */
 
 .toolbar__shortcut {

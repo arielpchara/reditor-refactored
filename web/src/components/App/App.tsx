@@ -4,6 +4,7 @@ import { Editor, EditorHandle } from '../Editor';
 import { OtpDialog } from '../OtpDialog';
 import { Toolbar } from '../Toolbar';
 import { Toast, ToastKind } from '../Toast';
+import { HistoryDrawer, ContentVersion, hashContent } from '../HistoryDrawer';
 
 type ToastState = { message: string; kind: ToastKind; key: number } | null;
 type LoadPhase = 'loading' | 'auth' | 'ready' | 'error';
@@ -56,6 +57,9 @@ export function App(): JSX.Element {
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [history, setHistory] = useState<ContentVersion[]>([]);
+  const [currentHash, setCurrentHash] = useState('');
+  const [historyOpen, setHistoryOpen] = useState(false);
   const editorRef = useRef<EditorHandle>(null);
   const savedContentRef = useRef<string>('');
 
@@ -80,6 +84,9 @@ export function App(): JSX.Element {
     const content = await fileRes.text();
     setInitialContent(content);
     savedContentRef.current = content;
+    const hash = hashContent(content);
+    setCurrentHash(hash);
+    setHistory([{ hash, content, savedAt: new Date(), isOriginal: true }]);
     setPhase('ready');
   }, []);
 
@@ -120,6 +127,12 @@ export function App(): JSX.Element {
       if (res.ok) {
         savedContentRef.current = content;
         setIsDirty(false);
+        const hash = hashContent(content);
+        setCurrentHash(hash);
+        setHistory((prev) => {
+          if (prev.some((v) => v.hash === hash)) return prev;
+          return [...prev, { hash, content, savedAt: new Date(), isOriginal: false }];
+        });
         showToast('Saved', 'ok');
       } else {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
@@ -143,6 +156,12 @@ export function App(): JSX.Element {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [isDirty, isSaving, handleSave]);
 
+  const handleRestore = useCallback((content: string): void => {
+    editorRef.current?.setValue(content);
+    setIsDirty(content !== savedContentRef.current);
+    setHistoryOpen(false);
+  }, []);
+
   if (phase === 'loading') return <div className="app__loading">Loading…</div>;
   if (phase === 'error') return <div className="app__error">Error: {errorMsg}</div>;
   if (phase === 'auth') return <OtpDialog onSuccess={() => void handleAuthSuccess()} />;
@@ -154,6 +173,7 @@ export function App(): JSX.Element {
         isDirty={isDirty}
         isSaving={isSaving}
         onSave={() => void handleSave()}
+        onHistoryOpen={() => setHistoryOpen(true)}
       />
       <Editor
         ref={editorRef}
@@ -162,6 +182,13 @@ export function App(): JSX.Element {
         onChange={(value) => {
           setIsDirty(value !== savedContentRef.current);
         }}
+      />
+      <HistoryDrawer
+        versions={history}
+        isOpen={historyOpen}
+        currentHash={currentHash}
+        onClose={() => setHistoryOpen(false)}
+        onRestore={handleRestore}
       />
       {toast && (
         <Toast
