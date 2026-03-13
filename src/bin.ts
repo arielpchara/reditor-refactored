@@ -37,23 +37,37 @@ async function main(): Promise<void> {
   if (!validation.ok) {
     const { error } = validation;
 
-    if (error.kind === 'NOT_FOUND' && opts.create) {
-      const confirmed = await promptCreateFile(absoluteFile);
-      if (!confirmed) {
-        process.stdout.write('\n  Aborted.\n\n');
-        process.exit(0);
+    if (error.kind === 'NOT_FOUND') {
+      if (opts.create) {
+        // --create flag: skip prompt, create immediately
+        const created = createFile(absoluteFile);
+        if (!created.ok) {
+          logger.error('Failed to create file', {
+            file: absoluteFile,
+            error: created.error.message,
+          });
+          process.exit(1);
+        }
+        logger.info('File created', { file: absoluteFile });
+      } else {
+        // No flag: always ask
+        const confirmed = await promptCreateFile(absoluteFile);
+        if (!confirmed) {
+          process.stdout.write('\n  Aborted.\n\n');
+          process.exit(0);
+        }
+        const created = createFile(absoluteFile);
+        if (!created.ok) {
+          logger.error('Failed to create file', {
+            file: absoluteFile,
+            error: created.error.message,
+          });
+          process.exit(1);
+        }
+        logger.info('File created', { file: absoluteFile });
       }
-      const created = createFile(absoluteFile);
-      if (!created.ok) {
-        logger.error('Failed to create file', { file: absoluteFile, error: created.error.message });
-        process.exit(1);
-      }
-      logger.info('File created', { file: absoluteFile });
     } else {
       switch (error.kind) {
-        case 'NOT_FOUND':
-          logger.error('File not found. Use --create to create it.', { file: absoluteFile });
-          break;
         case 'IS_DIRECTORY':
           logger.error('Path points to a directory, not a file', { file: absoluteFile });
           break;
