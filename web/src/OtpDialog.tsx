@@ -33,8 +33,9 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
       return;
     }
 
-    setAttempt((a) => a + 1);
-    setError(result.error);
+    const nextAttempt = attempt + 1;
+    setAttempt(nextAttempt);
+    setError(`${result.error} — attempt ${nextAttempt} of ${MAX_OTP_ATTEMPTS}`);
     setOtpValue('');
     setState('input');
   };
@@ -43,7 +44,7 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
     return (
       <div id="otp-overlay">
         <div className="otp-dialog" role="dialog" aria-modal="true">
-          <p className="otp-title otp-fatal-title">reditor — session terminated</p>
+          <p className="otp-fatal-title">reditor — session terminated</p>
           <p className="otp-fatal-msg">
             Too many failed attempts.
             <br />
@@ -58,50 +59,49 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
 
   return (
     <div id="otp-overlay">
-      <div className="otp-dialog" role="dialog" aria-modal="true" aria-labelledby="otp-title">
-        <p className="otp-title" id="otp-title">
-          reditor — authenticate
-        </p>
-        <div className="otp-field">
-          <label className="otp-label" htmlFor="otp-input">
-            Enter OTP:
-          </label>
-          <input
-            id="otp-input"
-            className="otp-input"
-            type="password"
-            autoComplete="one-time-code"
-            spellCheck={false}
-            autoFocus
-            value={otpValue}
-            onChange={(e) => setOtpValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') void handleSubmit();
-            }}
-            disabled={isLoading}
-          />
+      <div className="otp-wrapper">
+        <div className="otp-dialog" role="dialog" aria-modal="true">
+          <div className="otp-field">
+            <label className="otp-label" htmlFor="otp-input">
+              Enter OTP:
+            </label>
+            <input
+              id="otp-input"
+              className="otp-input"
+              type="password"
+              autoComplete="one-time-code"
+              spellCheck={false}
+              autoFocus
+              value={otpValue}
+              onChange={(e) => setOtpValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void handleSubmit();
+              }}
+              disabled={isLoading}
+            />
+          </div>
+          <div className="otp-actions">
+            {isLoading ? (
+              <span className="otp-spinner" aria-hidden="true" />
+            ) : (
+              <button
+                className="otp-submit"
+                id="otp-submit"
+                type="button"
+                onClick={() => void handleSubmit()}
+              >
+                Submit
+              </button>
+            )}
+          </div>
         </div>
-        <p className="otp-attempt" id="otp-attempt">
-          Attempt {attempt} / {MAX_OTP_ATTEMPTS}
-        </p>
-        <p className="otp-error" id="otp-error" aria-live="polite">
-          {error}
-        </p>
-        <div className="otp-actions">
-          {isLoading ? (
-            <span className="otp-spinner" aria-hidden="true" />
-          ) : (
-            <button
-              className="otp-submit"
-              id="otp-submit"
-              type="button"
-              onClick={() => void handleSubmit()}
-            >
-              Submit
-            </button>
-          )}
-        </div>
+        {error && (
+          <p className="otp-error" id="otp-error" aria-live="polite">
+            {error}
+          </p>
+        )}
       </div>
     </div>
   );
 };
+

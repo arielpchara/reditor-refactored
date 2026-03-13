@@ -76,7 +76,7 @@ describe('OtpDialog', () => {
     fireEvent.change(screen.getByLabelText(/enter otp/i), { target: { value: 'wrong' } });
     fireEvent.click(screen.getByRole('button', { name: /submit/i }));
 
-    await waitFor(() => expect(screen.getByText('Invalid OTP')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText(/invalid otp/i)).toBeInTheDocument());
   });
 
   it('increments attempt counter display on failure', async () => {

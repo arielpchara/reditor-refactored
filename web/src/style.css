@@ -125,35 +125,35 @@ body {
   justify-content: center;
 }
 
+/* Fixed-width column: dialog on top, error below — dialog never moves */
+.otp-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 360px;
+  max-width: 92vw;
+}
+
 .otp-dialog {
   font-family: var(--editor__font);
   background: var(--widget__bg);
   border: 1px solid var(--widget__border);
   border-radius: 6px;
-  padding: 1.75rem 2rem;
-  min-width: 360px;
-  max-width: 92vw;
+  padding: 1.25rem 1.5rem;
   color: var(--widget__color);
   box-shadow:
     0 8px 24px rgba(1, 4, 9, 0.6),
     0 0 0 1px var(--widget__border-subtle);
-}
-
-.otp-title {
-  font-size: 0.78rem;
-  color: var(--widget__color-options);
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.04em;
-  text-transform: lowercase;
-  border-bottom: 1px solid var(--widget__border-subtle);
-  padding-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .otp-field {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 0.4rem;
 }
 
 .otp-label {
@@ -188,21 +188,13 @@ body {
   cursor: not-allowed;
 }
 
-.otp-attempt {
-  font-size: 0.72rem;
-  color: var(--editor__line-number);
-  margin-top: 0.35rem;
-  margin-bottom: 0.9rem;
-}
-
+/* Rendered only when error is non-empty — outside the dialog box */
 .otp-error {
   font-size: 0.78rem;
   color: var(--color-danger);
-  min-height: 1.1rem;
-  margin-bottom: 0.75rem;
   background: var(--color-danger-bg);
   border-radius: 3px;
-  padding: 0 0.35rem;
+  padding: 0.25rem 0.5rem;
   line-height: 1.4rem;
 }
 
@@ -210,7 +202,6 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0.25rem;
 }
 
 .otp-submit {
@@ -249,6 +240,7 @@ body {
 
 /* Fatal screen */
 .otp-fatal-title {
+  font-size: 0.85rem;
   color: var(--color-danger);
   margin-bottom: 1rem;
 }
