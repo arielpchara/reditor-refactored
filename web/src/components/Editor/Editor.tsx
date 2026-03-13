@@ -1,5 +1,5 @@
 import './Editor.css';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { JSX, useEffect, useRef } from 'react';
 import 'prism-code-editor/prism/languages/markup';
 import 'prism-code-editor/prism/languages/css';
 import 'prism-code-editor/prism/languages/javascript';
@@ -16,44 +16,40 @@ import 'prism-code-editor/prism/languages/go';
 import 'prism-code-editor/prism/languages/sql';
 import { basicEditor } from 'prism-code-editor/setups';
 
-export type EditorHandle = {
-  getValue: () => string;
-  setValue: (content: string) => void;
-};
-
 export type EditorProps = {
   language: string;
-  initialContent: string;
+  /** Current content. External changes (e.g. restore) are synced into the editor. */
+  value: string;
   onChange: (value: string) => void;
 };
 
-export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
-  { language, initialContent, onChange },
-  ref,
-) {
+export function Editor({ language, value, onChange }: EditorProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorInstanceRef = useRef<ReturnType<typeof basicEditor> | null>(null);
 
+  // Mount the editor once with the initial value.
   useEffect(() => {
     if (!containerRef.current) return;
     editorInstanceRef.current = basicEditor(containerRef.current, {
       language,
       theme: 'github-dark',
-      value: initialContent,
+      value,
       lineNumbers: true,
-      onUpdate(value) {
-        onChange(value);
+      onUpdate(v) {
+        onChange(v);
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // mount once only
+  }, []);
 
-  useImperativeHandle(ref, () => ({
-    getValue: () => editorInstanceRef.current?.value ?? '',
-    setValue: (content: string) => {
-      if (editorInstanceRef.current) editorInstanceRef.current.setOptions({ value: content });
-    },
-  }));
+  // Sync external value changes (e.g. history restore) into the editor.
+  // Skip when the value already matches to avoid disrupting normal typing.
+  useEffect(() => {
+    const editor = editorInstanceRef.current;
+    if (!editor || editor.value === value) return;
+    editor.textarea.value = value;
+    editor.textarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  }, [value]);
 
   return <div ref={containerRef} className="editor" />;
-});
+}

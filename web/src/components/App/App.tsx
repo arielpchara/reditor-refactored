@@ -1,6 +1,6 @@
 import './App.css';
 import { JSX, useCallback, useEffect, useRef, useState } from 'react';
-import { Editor, EditorHandle } from '../Editor';
+import { Editor } from '../Editor';
 import { OtpDialog } from '../OtpDialog';
 import { Toolbar } from '../Toolbar';
 import { Toast, ToastKind } from '../Toast';
@@ -52,7 +52,7 @@ export function App(): JSX.Element {
   const [phase, setPhase] = useState<LoadPhase>('loading');
   const [filename, setFilename] = useState('');
   const [language, setLanguage] = useState('plaintext');
-  const [initialContent, setInitialContent] = useState('');
+  const [editorContent, setEditorContent] = useState('');
   const [toast, setToast] = useState<ToastState>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -60,7 +60,6 @@ export function App(): JSX.Element {
   const [history, setHistory] = useState<ContentVersion[]>([]);
   const [currentHash, setCurrentHash] = useState('');
   const [historyOpen, setHistoryOpen] = useState(false);
-  const editorRef = useRef<EditorHandle>(null);
   const savedContentRef = useRef<string>('');
 
   const loadFileData = useCallback(async (): Promise<void> => {
@@ -82,7 +81,7 @@ export function App(): JSX.Element {
       return;
     }
     const content = await fileRes.text();
-    setInitialContent(content);
+    setEditorContent(content);
     savedContentRef.current = content;
     const hash = hashContent(content);
     setCurrentHash(hash);
@@ -117,7 +116,7 @@ export function App(): JSX.Element {
 
   const handleSave = useCallback(async (): Promise<void> => {
     setIsSaving(true);
-    const content = editorRef.current?.getValue() ?? '';
+    const content = editorContent;
     try {
       const res = await fetchWithAuth('/file', {
         method: 'PUT',
@@ -143,7 +142,7 @@ export function App(): JSX.Element {
     } finally {
       setIsSaving(false);
     }
-  }, [showToast]);
+  }, [editorContent, showToast]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
@@ -157,7 +156,7 @@ export function App(): JSX.Element {
   }, [isDirty, isSaving, handleSave]);
 
   const handleRestore = useCallback((content: string): void => {
-    editorRef.current?.setValue(content);
+    setEditorContent(content);
     setIsDirty(content !== savedContentRef.current);
     setHistoryOpen(false);
   }, []);
@@ -176,10 +175,10 @@ export function App(): JSX.Element {
         onHistoryOpen={() => setHistoryOpen(true)}
       />
       <Editor
-        ref={editorRef}
         language={language}
-        initialContent={initialContent}
+        value={editorContent}
         onChange={(value) => {
+          setEditorContent(value);
           setIsDirty(value !== savedContentRef.current);
         }}
       />
