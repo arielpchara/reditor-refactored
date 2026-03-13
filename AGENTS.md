@@ -14,6 +14,7 @@ Reusable agent skills live in `skills/`. Each skill is a self-contained instruct
 | [`skills/commit.md`](./skills/commit.md) | Create descriptive git commits | After every completed task, before closing work |
 | [`skills/status.md`](./skills/status.md) | Maintain the AI & Copilot usage disclosure in `README.md` | After any significant AI-generated contribution |
 | [`skills/http-scenarios.md`](./skills/http-scenarios.md) | Write/update `rest/<controller>.http` scenario files | Every time an HTTP endpoint is created, changed, or removed |
+| [`skills/version.md`](./skills/version.md) | Bump the version using SemVer derived from commits | Before tagging a release |
 
 **When you finish a task that changes any user-facing behaviour, always run the `update-readme` and `http-scenarios` skills before closing the task. Then run the `commit` skill to commit the work.**
 
