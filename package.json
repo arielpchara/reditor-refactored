@@ -25,7 +25,8 @@
     "format:check": "prettier --check \"{src,web/src}/**/*.{ts,tsx,css}\"",
     "typecheck": "tsc --noEmit",
     "spell": "cspell lint --no-progress",
-    "prepare": "husky"
+    "prepare": "husky || true",
+    "prepack": "npm run build:all"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

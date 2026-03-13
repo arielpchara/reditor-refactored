@@ -15,6 +15,35 @@
 - **Winston logging** — structured logs to console and `logs/reditor-<timestamp>.log`
 - **Startup file validation** — fails fast with a descriptive error if the file is missing, a directory, too large, or binary
 
+## Quick Start
+
+No installation needed. Run directly from GitHub with `npx`:
+
+```bash
+# Edit a file — runs the latest version straight from the repository
+npx github:arielpchara/reditor-refactored serve <file>
+```
+
+> **How it works:** `npx` downloads the repository, runs `npm run build` automatically (triggered by the `prepare` script), then executes the CLI. Requires Node.js ≥ 18 and an internet connection on first run. Subsequent runs use the npm cache.
+
+### Examples
+
+```bash
+# Edit a remote config file with default security (OTP + JWT)
+npx github:arielpchara/reditor-refactored serve /etc/nginx/nginx.conf
+
+# Use a custom port
+npx github:arielpchara/reditor-refactored serve ./app.conf --port 8080
+
+# Create the file if it doesn't exist yet
+npx github:arielpchara/reditor-refactored serve ./new-config.yaml --create
+
+# Disable security on a fully trusted local network
+npx github:arielpchara/reditor-refactored serve ./settings.json --force-disable-security
+```
+
+---
+
 ## Installation
 
 ```bash
