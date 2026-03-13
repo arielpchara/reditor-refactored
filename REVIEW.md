@@ -1,118 +1,118 @@
-# 🔁 Reescrevi o REDITOR do zero em menos de 24 horas — com IA
+# 🔁 I Rebuilt REDITOR from Scratch in Under 24 Hours — with AI
 
-Há alguns meses, compartilhei aqui o **REDITOR** — uma ideia de ferramenta CLI para editar arquivos de servidor pelo navegador.
-👉 [Post original](https://www.linkedin.com/feed/update/urn:li:activity:7437949769785729024/)
+A few months ago, I shared **REDITOR** here — an idea for a CLI tool to edit server files from the browser.
+👉 [Original post](https://www.linkedin.com/feed/update/urn:li:activity:7437949769785729024/)
 
-Naquela época, era mais conceito do que produto. Desta vez, resolvi refazer tudo do zero — e em **menos de 24 horas** tenho um programa funcional, publicado, que qualquer pessoa pode testar com um único comando.
+Back then, it was more concept than product. This time, I rebuilt everything from scratch — and in **under 24 hours** I have a functional, published program that anyone can test with a single command.
 
 ---
 
-## 📊 Os números
+## 📊 The Numbers
 
-| Métrica | Valor |
+| Metric | Value |
 |---|---|
-| Tempo total | ~21 horas (12/mar 16:29 → 13/mar 13:16) |
+| Total time | ~21 hours (Mar 12 16:29 → Mar 13 13:16) |
 | Commits | **52** |
-| Arquivos criados/alterados | **104** |
-| Linhas inseridas | **+11.397** |
-| Linhas de código (backend + frontend) | **~3.620** |
-| Linhas de testes | **~1.243** |
-| Arquivos de código | **69** |
-| Skills de IA escritas | **5** (766 linhas) |
-| AGENTS.md (instruções de arquitetura) | **356 linhas** |
+| Files created/changed | **104** |
+| Lines inserted | **+11,397** |
+| Lines of code (backend + frontend) | **~3,620** |
+| Lines of tests | **~1,243** |
+| Code files | **69** |
+| AI Skills written | **5** (766 lines) |
+| AGENTS.md (architecture instructions) | **356 lines** |
 
 ---
 
-## 🧠 Como foi a interação com a IA
+## 🧠 How the AI Interaction Worked
 
-Eu **não pedi para a IA "criar um projeto"**. Eu arquitetei tudo antes:
+I **didn't ask the AI to "create a project"**. I architected everything first:
 
-1. **Criei o `AGENTS.md`** — um documento de 356 linhas que define a arquitetura hexagonal, as convenções de código (FP sobre OOP, `type` no lugar de `interface`, discriminated unions, winston logger), a estrutura de pastas, regras de dependência, padrões de CSS (BEM), e o fluxo de testes.
+1. **Created `AGENTS.md`** — a 356-line document defining the hexagonal architecture, coding conventions (FP over OOP, `type` instead of `interface`, discriminated unions, winston logger), folder structure, dependency rules, CSS patterns (BEM), and testing workflow.
 
-2. **Escrevi 5 Skills** — arquivos `.md` com instruções especializadas que a IA aprende a executar:
-   - **`commit.md`** — como criar commits descritivos e semânticos
-   - **`update-readme.md`** — manter o README em sincronia com o código
-   - **`http-scenarios.md`** — gerar/atualizar os arquivos `.http` para cada endpoint
-   - **`status.md`** — manter disclosure de uso de IA no README
-   - **`version.md`** — bump de versão seguindo SemVer
+2. **Wrote 5 Skills** — specialized `.md` instruction files that the AI learns to execute:
+   - **`commit.md`** — how to create descriptive, semantic commits
+   - **`update-readme.md`** — keep the README in sync with the code
+   - **`http-scenarios.md`** — generate/update `.http` files for each endpoint
+   - **`status.md`** — maintain AI usage disclosure in the README
+   - **`version.md`** — version bump following SemVer
 
-3. **Defini os parâmetros e a IA executou** — ela criava os arquivos, seguia as convenções, escrevia testes, e eu revisava e direcionava.
-
----
-
-## 🔄 Mudanças no meio do caminho
-
-Nem tudo foi linear. Várias decisões mudaram durante o processo:
-
-- **Inclusão do React** — comecei com HTML puro, mas rapidamente ficou claro que precisava de componentes. Migrei para React + Vite no meio do desenvolvimento.
-- **esbuild no lugar de tsc** — para gerar um artefato leve que pudesse ser usado direto com `npx`, troquei o build do backend para esbuild. O resultado é um bundle minificado que roda sem precisar instalar dependências.
-- **Refactors no meio do caminho** — renomeei módulos, mudei a estrutura de diretórios do web, e redesenhei a UI mais de uma vez.
+3. **I set the parameters and the AI executed** — it created the files, followed conventions, wrote tests, and I reviewed and steered.
 
 ---
 
-## 🤖 Nem toda IA é igual — o que aprendi testando diferentes modelos
+## 🔄 Mid-Course Changes
 
-Esse projeto foi um stress test real de diferentes modelos de IA para programação:
+Not everything was linear. Several decisions changed during the process:
 
-- **Claude Sonnet** — o mais equilibrado. Entendia as skills, seguia as convenções do `AGENTS.md`, produzia código consistente e era econômico nos tokens.
-- **Claude Opus** — poderoso, mas devorava todos os meus tokens. Para tarefas longas ficava caro demais sem ganho proporcional de qualidade.
-- **Claude Haiku** — para tarefas complexas, não conseguia. Também não soube interpretar as skills corretamente, voltando a padrões genéricos.
-- **Codex (OpenAI)** — testei também, mas não entendeu o sistema de skills. Ignorava o `AGENTS.md` e gerava código fora das convenções definidas.
-
-### Os momentos de falha
-
-Houve **diversos momentos** em que a IA começou a degradar:
-
-- Contexto longo demais → respostas genéricas, ignorando conventions
-- Precisei **limpar contexto várias vezes** — fechar a sessão e começar uma nova
-- Às vezes o modelo "esquecia" o que já tinha sido feito e propunha refactors desnecessários
-- Skills mais complexas (como build + deploy) exigiam intervenção manual
-
-A lição: **IA é uma ferramenta, não um autopilot**. O resultado depende diretamente da qualidade das instruções e da supervisão humana.
+- **Adding React** — I started with plain HTML, but it quickly became clear I needed components. I migrated to React + Vite mid-development.
+- **esbuild instead of tsc** — to produce a lightweight artifact that could be used directly with `npx`, I switched the backend build to esbuild. The result is a minified bundle that runs without installing dependencies.
+- **Mid-flight refactors** — I renamed modules, changed the web directory structure, and redesigned the UI more than once.
 
 ---
 
-## 🚀 O que o REDITOR faz hoje
+## 🤖 Not All AI Is Equal — What I Learned Testing Different Models
 
-- **Editor no navegador** com syntax highlighting automático (via `prism-code-editor`)
-- **Segurança por padrão** — OTP mostrado no terminal + JWT RS256
-- **Rate limiting** — 3 tentativas erradas de OTP e o servidor fecha
-- **HTTPS** com certificado auto-gerado
-- **Histórico de versões** — drawer lateral com as versões salvas durante a sessão
-- **Criação de arquivos** — flag `--create` para criar arquivos inexistentes
-- **Zero instalação** — roda direto com `npx`
+This project was a real stress test of different AI models for programming:
+
+- **Claude Sonnet** — the most balanced. Understood the skills, followed `AGENTS.md` conventions, produced consistent code, and was economical with tokens.
+- **Claude Opus** — powerful, but devoured all my tokens. For long tasks it was too expensive without a proportional quality gain.
+- **Claude Haiku** — couldn't handle complex tasks. Also failed to interpret the skills correctly, reverting to generic patterns.
+- **Codex (OpenAI)** — I tested it too, but it didn't understand the skills system. It ignored `AGENTS.md` and generated code outside the defined conventions.
+
+### The Failure Moments
+
+There were **many moments** where the AI started to degrade:
+
+- Context too long → generic responses, ignoring conventions
+- I had to **clear context multiple times** — close the session and start a new one
+- Sometimes the model "forgot" what had already been done and proposed unnecessary refactors
+- More complex skills (like build + deploy) required manual intervention
+
+The lesson: **AI is a tool, not autopilot**. The outcome depends directly on the quality of the instructions and human supervision.
 
 ---
 
-## 🧪 Teste agora
+## 🚀 What REDITOR Does Today
 
-Não precisa instalar nada. Só precisa de Node.js ≥ 18:
+- **Browser editor** with automatic syntax highlighting (via `prism-code-editor`)
+- **Secure by default** — OTP displayed in terminal + JWT RS256
+- **Rate limiting** — 3 wrong OTP attempts and the server shuts down
+- **HTTPS** with auto-generated certificate
+- **Version history** — side drawer with versions saved during the session
+- **File creation** — `--create` flag to create non-existent files
+- **Zero installation** — runs directly with `npx`
+
+---
+
+## 🧪 Try It Now
+
+No installation needed. Just Node.js ≥ 18:
 
 ```bash
-# Editar um arquivo existente
-npx github:arielpchara/reditor-refactored serve ./qualquer-arquivo.txt
+# Edit an existing file
+npx github:arielpchara/reditor-refactored serve ./any-file.txt
 
-# Criar um arquivo novo
-npx github:arielpchara/reditor-refactored serve ./novo.yaml --create
+# Create a new file
+npx github:arielpchara/reditor-refactored serve ./new.yaml --create
 
-# Com porta customizada
+# With a custom port
 npx github:arielpchara/reditor-refactored serve ./config.json --port 8080
 ```
 
-O OTP aparece no terminal. Cole no navegador. Pronto.
+The OTP appears in the terminal. Paste it in the browser. Done.
 
-📦 Repositório: [github.com/arielpchara/reditor-refactored](https://github.com/arielpchara/reditor-refactored)
-
----
-
-## 💡 O takeaway
-
-Em menos de 24 horas, com a IA certa e instruções bem escritas, é possível ir de zero a um produto funcional e publicado. Mas o diferencial não foi a IA — foi saber **o que pedir**, **como estruturar**, e **quando intervir**.
-
-As skills e o `AGENTS.md` foram o verdadeiro multiplicador de produtividade. A IA sem direção produz código genérico. Com arquitetura e convenções bem definidas, ela se torna uma extensão real do seu raciocínio.
+📦 Repository: [github.com/arielpchara/reditor-refactored](https://github.com/arielpchara/reditor-refactored)
 
 ---
 
-*52 commits. 69 arquivos. ~3.600 linhas de código. ~1.200 linhas de teste. 5 skills. 1 AGENTS.md. Menos de 24 horas.*
+## 💡 The Takeaway
+
+In under 24 hours, with the right AI and well-written instructions, it's possible to go from zero to a functional, published product. But the differentiator wasn't the AI — it was knowing **what to ask**, **how to structure**, and **when to intervene**.
+
+The skills and `AGENTS.md` were the real productivity multiplier. AI without direction produces generic code. With well-defined architecture and conventions, it becomes a real extension of your thinking.
+
+---
+
+*52 commits. 69 files. ~3,600 lines of code. ~1,200 lines of tests. 5 skills. 1 AGENTS.md. Under 24 hours.*
 
 #AI #CopilotAgent #CLI #DevTools #NodeJS #React #TypeScript #OpenSource #DeveloperProductivity
