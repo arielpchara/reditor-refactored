@@ -1,7 +1,8 @@
+import './App.css';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Editor, EditorHandle } from './Editor';
-import { OtpDialog } from './OtpDialog';
-import { Toolbar } from './Toolbar';
+import { Editor, EditorHandle } from '../Editor';
+import { OtpDialog } from '../OtpDialog';
+import { Toolbar } from '../Toolbar';
 
 type AppStatus = { msg: string; kind: 'ok' | 'error' | '' };
 type LoadPhase = 'loading' | 'auth' | 'ready' | 'error';
@@ -45,7 +46,7 @@ const getAuthHeader = (): Record<string, string> => {
 const fetchWithAuth = (url: string, init: RequestInit = {}): Promise<Response> =>
   fetch(url, { ...init, headers: { ...getAuthHeader(), ...(init.headers ?? {}) } });
 
-export const App = (): JSX.Element => {
+export function App(): JSX.Element {
   const [phase, setPhase] = useState<LoadPhase>('loading');
   const [filename, setFilename] = useState('');
   const [language, setLanguage] = useState('plaintext');
@@ -121,8 +122,8 @@ export const App = (): JSX.Element => {
     }
   }, []);
 
-  if (phase === 'loading') return <div className="loading">Loading…</div>;
-  if (phase === 'error') return <div className="error">Error: {errorMsg}</div>;
+  if (phase === 'loading') return <div className="app__loading">Loading…</div>;
+  if (phase === 'error') return <div className="app__error">Error: {errorMsg}</div>;
   if (phase === 'auth') return <OtpDialog onSuccess={() => void handleAuthSuccess()} />;
 
   return (
@@ -145,4 +146,4 @@ export const App = (): JSX.Element => {
       />
     </>
   );
-};
+}

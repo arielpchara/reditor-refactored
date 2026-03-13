@@ -1,0 +1,136 @@
+.otp {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(13, 17, 23, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Equal spacers keep .otp__dialog centred; error in .otp__bottom never shifts it */
+.otp__top {
+  flex: 1;
+}
+
+.otp__bottom {
+  flex: 1;
+  width: 360px;
+  max-width: 92vw;
+  padding-top: 0.5rem;
+}
+
+.otp__dialog {
+  font-family: var(--editor__font);
+  background: var(--widget__bg);
+  border: 1px solid var(--widget__border);
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+  width: 360px;
+  max-width: 92vw;
+  color: var(--widget__color);
+  box-shadow:
+    0 8px 24px rgba(1, 4, 9, 0.6),
+    0 0 0 1px var(--widget__border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.otp__field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.otp__label {
+  font-size: 0.85rem;
+  color: var(--widget__color-active);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.otp__input {
+  flex: 1;
+  background: var(--widget__bg-input);
+  border: 1px solid var(--widget__border);
+  border-radius: 4px;
+  color: var(--widget__color-active);
+  font-family: inherit;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.6rem;
+  outline: none;
+  caret-color: var(--color-accent);
+  letter-spacing: 0.2em;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.otp__input:focus {
+  border-color: var(--widget__focus-ring);
+  box-shadow: 0 0 0 2px rgba(0, 122, 204, 0.25);
+}
+
+.otp__input:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.otp__error {
+  font-size: 0.78rem;
+  color: var(--color-danger);
+  background: var(--color-danger-bg);
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
+  line-height: 1.4rem;
+}
+
+.otp__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.otp__submit {
+  background: var(--color-success);
+  border: 1px solid rgba(240, 246, 252, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.otp__submit:hover {
+  background: var(--color-success-hover);
+}
+
+.otp__spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--widget__border);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: otp-spin 0.65s linear infinite;
+}
+
+@keyframes otp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.otp__fatal-title {
+  font-size: 0.85rem;
+  color: var(--color-danger);
+  margin-bottom: 1rem;
+}
+
+.otp__fatal-message {
+  font-size: 0.82rem;
+  color: var(--widget__color-options);
+  line-height: 1.7;
+}

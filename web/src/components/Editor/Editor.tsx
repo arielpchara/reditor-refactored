@@ -1,3 +1,4 @@
+import './Editor.css';
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import 'prism-code-editor/prism/languages/markup';
 import 'prism-code-editor/prism/languages/css';
@@ -19,14 +20,14 @@ export type EditorHandle = {
   getValue: () => string;
 };
 
-type Props = {
+export type EditorProps = {
   language: string;
   initialContent: string;
   onChange: () => void;
 };
 
-export const Editor = forwardRef<EditorHandle, Props>(
-  ({ language, initialContent, onChange }, ref) => {
+export const Editor = forwardRef<EditorHandle, EditorProps>(
+  function Editor({ language, initialContent, onChange }, ref) {
     const containerRef = useRef<HTMLDivElement>(null);
     const editorInstanceRef = useRef<ReturnType<typeof basicEditor> | null>(null);
 
@@ -44,8 +45,6 @@ export const Editor = forwardRef<EditorHandle, Props>(
       getValue: () => editorInstanceRef.current?.value ?? '',
     }));
 
-    return <div ref={containerRef} id="editor-container" />;
+    return <div ref={containerRef} className="editor" />;
   },
 );
-
-Editor.displayName = 'Editor';

@@ -61,7 +61,17 @@ src/
 ├── bin.ts                       # CLI entry point (#!/usr/bin/env node)
 └── index.ts                     # Public library API (re-exports from core)
 web/
-└── index.html                   # Browser UI served as static files
+├── src/
+│   ├── components/              # One directory per React component
+│   │   ├── App/                 # App.tsx · App.css · index.ts
+│   │   ├── Editor/              # Editor.tsx · Editor.css · index.ts
+│   │   ├── OtpDialog/           # OtpDialog.tsx · OtpDialog.css · index.ts
+│   │   └── Toolbar/             # Toolbar.tsx · Toolbar.css · index.ts
+│   ├── __tests__/               # Vitest tests mirroring src/
+│   ├── otpApi.ts                # Pure OTP exchange logic (no UI)
+│   ├── main.tsx                 # ReactDOM.createRoot entry point
+│   └── style.css                # Global: design tokens, reset, html/body
+└── index.html                   # Vite entry point
 ```
 
 ### Dependency rule (strictly enforced)
@@ -167,7 +177,124 @@ Always run `npm run format` before finishing.
 
 ---
 
-## Adding a new domain module
+## Web Frontend
+
+The `web/` directory is a standalone **Vite + React** application. Its conventions are independent of the server-side TypeScript rules above.
+
+### Directory structure
+
+```
+web/src/
+├── components/                # One directory per UI component
+│   └── ComponentName/
+│       ├── ComponentName.tsx  # component (function declaration)
+│       ├── ComponentName.css  # BEM styles (omit if component has no styles)
+│       └── index.ts           # barrel — re-exports the component and its types
+├── __tests__/
+│   ├── components/            # mirrors components/ structure
+│   │   └── ComponentName.test.tsx
+│   ├── otpApi.test.ts         # pure-function tests (no DOM)
+│   └── setup.ts               # jest-dom matchers + afterEach cleanup
+├── otpApi.ts                  # pure API utilities — no UI
+├── main.tsx                   # entry point — ReactDOM.createRoot
+└── style.css                  # global only: design tokens (:root), reset, html/body
+```
+
+### Component rules
+
+**Use function declarations, not arrow functions:**
+
+```tsx
+// ✅ Good
+export function Toolbar({ filename, isDirty }: ToolbarProps): JSX.Element {
+  return <div className="toolbar">...</div>;
+}
+
+// ❌ Bad
+export const Toolbar = (...): JSX.Element => <div />;
+```
+
+**`forwardRef` wraps a named inner function:**
+
+```tsx
+export const Editor = forwardRef<EditorHandle, EditorProps>(
+  function Editor({ language, initialContent, onChange }, ref) { ... },
+);
+```
+
+**Props type named `<Component>Props`:**
+
+```tsx
+// ✅ Good
+type ToolbarProps = {
+  filename: string;
+  isDirty: boolean;
+};
+
+export function Toolbar({ filename, isDirty }: ToolbarProps): JSX.Element { ... }
+
+// ❌ Bad — anonymous inline type
+export function Toolbar({ filename }: { filename: string }) { ... }
+```
+
+**Each component imports its own CSS at the top of the file:**
+
+```tsx
+import './Toolbar.css';
+```
+
+### CSS — BEM
+
+Each component has its own `.css` file. Classes follow [BEM](https://getbem.com/):
+
+- **Block** — the component root: `.toolbar`
+- **Element** — a child inside the block: `.toolbar__filename`, `.toolbar__save`
+- **Modifier** — a state or variant: `.toolbar__status--ok`, `.toolbar__status--error`
+
+Rules:
+
+- **Never use `!important`** — fix specificity by restructuring, never by forcing
+- All design tokens (colours, spacing, fonts) come from CSS custom properties defined in `style.css`
+- One CSS file per component; no cross-component style sharing
+
+```css
+/* ✅ Good — BEM, uses design tokens */
+.toolbar { display: flex; height: var(--toolbar-height); background: var(--widget__bg); }
+.toolbar__filename { flex: 1; }
+.toolbar__status--ok { color: var(--color-success-text); }
+
+/* ❌ Bad — !important, non-BEM, hardcoded values */
+#toolbar .filename { color: #0f0 !important; }
+```
+
+### Testing
+
+- **Vitest** with **jsdom** environment (configured in `web/vite.config.ts`)
+- **React Testing Library** (`@testing-library/react`) for component tests
+- **Always query by accessible role, label, or text** — never by CSS class or id
+
+```tsx
+// ✅ Good — role / label / text queries
+screen.getByRole('button', { name: /submit/i });
+screen.getByLabelText(/enter otp/i);
+screen.getByText(/session terminated/i);
+
+// ❌ Bad — couples tests to implementation details
+document.querySelector('#otp-submit');
+document.querySelector('.otp__submit');
+```
+
+### Adding a new component
+
+1. Create `web/src/components/<Name>/`
+2. Write `<Name>.tsx` — function declaration, `<Name>Props` type, import `./<Name>.css`
+3. Write `<Name>.css` — BEM classes, use `:root` tokens from `style.css`
+4. Write `index.ts` — `export { Name } from './<Name>';`
+5. Write `web/src/__tests__/components/<Name>.test.tsx` — RTL tests, query by role/label/text
+
+---
+
+
 
 1. Create `src/core/<domain>/types.ts` — types only
 2. Create `src/core/<domain>/operations.ts` — pure functions

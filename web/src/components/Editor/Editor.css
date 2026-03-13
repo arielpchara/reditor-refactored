@@ -1,0 +1,11 @@
+.editor {
+  width: 100vw;
+  height: calc(100vh - var(--toolbar-height));
+  display: grid;
+  overflow: auto;
+}
+
+/* prism-code-editor mounts into a grid cell and needs full height */
+.editor > * {
+  height: 100%;
+}

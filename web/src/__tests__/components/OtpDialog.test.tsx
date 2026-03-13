@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { OtpDialog } from '../OtpDialog';
-import { MAX_OTP_ATTEMPTS } from '../otpApi';
+import { OtpDialog } from '../../components/OtpDialog';
+import { MAX_OTP_ATTEMPTS } from '../../otpApi';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
