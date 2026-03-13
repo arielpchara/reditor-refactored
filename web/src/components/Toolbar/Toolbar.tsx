@@ -10,6 +10,8 @@ export type ToolbarProps = {
 
 export function Toolbar({ filename, isDirty, isSaving, onSave }: ToolbarProps): JSX.Element {
   const saveClass = ['toolbar__save', isSaving ? 'toolbar__save--saving' : ''].join(' ').trim();
+  const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform);
+  const shortcut = isMac ? '⌘S' : 'Ctrl+S';
   return (
     <div className="toolbar">
       <span className="toolbar__filename" title={filename}>
@@ -17,6 +19,7 @@ export function Toolbar({ filename, isDirty, isSaving, onSave }: ToolbarProps): 
       </span>
       <button className={saveClass} disabled={!isDirty || isSaving} onClick={onSave}>
         {isSaving ? 'Saving…' : 'Save'}
+        <kbd className="toolbar__shortcut">{shortcut}</kbd>
       </button>
     </div>
   );

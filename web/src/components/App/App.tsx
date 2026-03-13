@@ -132,6 +132,17 @@ export function App(): JSX.Element {
     }
   }, [showToast]);
 
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent): void => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (isDirty && !isSaving) void handleSave();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isDirty, isSaving, handleSave]);
+
   if (phase === 'loading') return <div className="app__loading">Loading…</div>;
   if (phase === 'error') return <div className="app__error">Error: {errorMsg}</div>;
   if (phase === 'auth') return <OtpDialog onSuccess={() => void handleAuthSuccess()} />;
