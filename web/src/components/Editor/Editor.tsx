@@ -23,7 +23,7 @@ export type EditorHandle = {
 export type EditorProps = {
   language: string;
   initialContent: string;
-  onChange: () => void;
+  onChange: (value: string) => void;
 };
 
 export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
@@ -38,7 +38,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
     editorInstanceRef.current = basicEditor(
       containerRef.current,
       { language, theme: 'github-dark', value: initialContent },
-      onChange,
+      () => onChange(editorInstanceRef.current?.value ?? ''),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // mount once only

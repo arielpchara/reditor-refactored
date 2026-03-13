@@ -57,6 +57,7 @@ export function App(): JSX.Element {
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const editorRef = useRef<EditorHandle>(null);
+  const savedContentRef = useRef<string>('');
 
   const loadFileData = useCallback(async (): Promise<void> => {
     const metaRes = await fetchWithAuth('/file-meta');
@@ -76,7 +77,9 @@ export function App(): JSX.Element {
       setPhase('error');
       return;
     }
-    setInitialContent(await fileRes.text());
+    const content = await fileRes.text();
+    setInitialContent(content);
+    savedContentRef.current = content;
     setPhase('ready');
   }, []);
 
@@ -107,13 +110,15 @@ export function App(): JSX.Element {
 
   const handleSave = useCallback(async (): Promise<void> => {
     setIsSaving(true);
+    const content = editorRef.current?.getValue() ?? '';
     try {
       const res = await fetchWithAuth('/file', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: editorRef.current?.getValue() ?? '' }),
+        body: JSON.stringify({ content }),
       });
       if (res.ok) {
+        savedContentRef.current = content;
         setIsDirty(false);
         showToast('Saved', 'ok');
       } else {
@@ -143,8 +148,8 @@ export function App(): JSX.Element {
         ref={editorRef}
         language={language}
         initialContent={initialContent}
-        onChange={() => {
-          setIsDirty(true);
+        onChange={(value) => {
+          setIsDirty(value !== savedContentRef.current);
         }}
       />
       {toast && (
