@@ -26,25 +26,26 @@ export type EditorProps = {
   onChange: () => void;
 };
 
-export const Editor = forwardRef<EditorHandle, EditorProps>(
-  function Editor({ language, initialContent, onChange }, ref) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const editorInstanceRef = useRef<ReturnType<typeof basicEditor> | null>(null);
+export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
+  { language, initialContent, onChange },
+  ref,
+) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const editorInstanceRef = useRef<ReturnType<typeof basicEditor> | null>(null);
 
-    useEffect(() => {
-      if (!containerRef.current) return;
-      editorInstanceRef.current = basicEditor(
-        containerRef.current,
-        { language, theme: 'github-dark', value: initialContent },
-        onChange,
-      );
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // mount once only
+  useEffect(() => {
+    if (!containerRef.current) return;
+    editorInstanceRef.current = basicEditor(
+      containerRef.current,
+      { language, theme: 'github-dark', value: initialContent },
+      onChange,
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // mount once only
 
-    useImperativeHandle(ref, () => ({
-      getValue: () => editorInstanceRef.current?.value ?? '',
-    }));
+  useImperativeHandle(ref, () => ({
+    getValue: () => editorInstanceRef.current?.value ?? '',
+  }));
 
-    return <div ref={containerRef} className="editor" />;
-  },
-);
+  return <div ref={containerRef} className="editor" />;
+});

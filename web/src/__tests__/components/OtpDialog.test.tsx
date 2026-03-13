@@ -117,9 +117,7 @@ describe('OtpDialog', () => {
       fireEvent.click(screen.getByRole('button', { name: /submit/i }));
     }
 
-    await waitFor(() =>
-      expect(screen.getByText(/session terminated/i)).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByText(/session terminated/i)).toBeInTheDocument());
     expect(screen.queryByLabelText(/enter otp/i)).not.toBeInTheDocument();
   });
 
