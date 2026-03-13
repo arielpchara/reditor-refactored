@@ -121,18 +121,20 @@ body {
   z-index: 100;
   background: rgba(13, 17, 23, 0.88);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
-/* Fixed-width column: dialog on top, error below — dialog never moves */
-.otp-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.5rem;
+/* Equal spacers keep .otp-dialog centred; error in .otp-bottom never shifts it */
+.otp-top {
+  flex: 1;
+}
+
+.otp-bottom {
+  flex: 1;
   width: 360px;
   max-width: 92vw;
+  padding-top: 0.5rem;
 }
 
 .otp-dialog {
@@ -141,6 +143,8 @@ body {
   border: 1px solid var(--widget__border);
   border-radius: 6px;
   padding: 1.25rem 1.5rem;
+  width: 360px;
+  max-width: 92vw;
   color: var(--widget__color);
   box-shadow:
     0 8px 24px rgba(1, 4, 9, 0.6),

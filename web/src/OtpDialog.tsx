@@ -43,6 +43,7 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
   if (state === 'fatal') {
     return (
       <div id="otp-overlay">
+        <div className="otp-top" />
         <div className="otp-dialog" role="dialog" aria-modal="true">
           <p className="otp-fatal-title">reditor — session terminated</p>
           <p className="otp-fatal-msg">
@@ -51,6 +52,7 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
             The server has shut down for security.
           </p>
         </div>
+        <div className="otp-bottom" />
       </div>
     );
   }
@@ -59,42 +61,43 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
 
   return (
     <div id="otp-overlay">
-      <div className="otp-wrapper">
-        <div className="otp-dialog" role="dialog" aria-modal="true">
-          <div className="otp-field">
-            <label className="otp-label" htmlFor="otp-input">
-              Enter OTP:
-            </label>
-            <input
-              id="otp-input"
-              className="otp-input"
-              type="password"
-              autoComplete="one-time-code"
-              spellCheck={false}
-              autoFocus
-              value={otpValue}
-              onChange={(e) => setOtpValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') void handleSubmit();
-              }}
-              disabled={isLoading}
-            />
-          </div>
-          <div className="otp-actions">
-            {isLoading ? (
-              <span className="otp-spinner" aria-hidden="true" />
-            ) : (
-              <button
-                className="otp-submit"
-                id="otp-submit"
-                type="button"
-                onClick={() => void handleSubmit()}
-              >
-                Submit
-              </button>
-            )}
-          </div>
+      <div className="otp-top" />
+      <div className="otp-dialog" role="dialog" aria-modal="true">
+        <div className="otp-field">
+          <label className="otp-label" htmlFor="otp-input">
+            Enter OTP:
+          </label>
+          <input
+            id="otp-input"
+            className="otp-input"
+            type="password"
+            autoComplete="one-time-code"
+            spellCheck={false}
+            autoFocus
+            value={otpValue}
+            onChange={(e) => setOtpValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') void handleSubmit();
+            }}
+            disabled={isLoading}
+          />
         </div>
+        <div className="otp-actions">
+          {isLoading ? (
+            <span className="otp-spinner" aria-hidden="true" />
+          ) : (
+            <button
+              className="otp-submit"
+              id="otp-submit"
+              type="button"
+              onClick={() => void handleSubmit()}
+            >
+              Submit
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="otp-bottom">
         {error && (
           <p className="otp-error" id="otp-error" aria-live="polite">
             {error}
@@ -104,4 +107,5 @@ export const OtpDialog = ({ onSuccess, fetchFn = fetch }: Props): JSX.Element =>
     </div>
   );
 };
+
 
