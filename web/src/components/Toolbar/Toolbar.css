@@ -1,44 +1,125 @@
+@keyframes toolbar-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes toolbar-save-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 6px rgba(63, 185, 80, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    box-shadow:
+      0 0 18px rgba(63, 185, 80, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+}
+
+/* ── Toolbar bar ─────────────────────────────────────────────── */
+
 .toolbar {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
   height: var(--toolbar-height);
-  padding: 0 1rem;
+  padding: 0 12px 0 16px;
   background: var(--widget__bg);
   border-bottom: 1px solid var(--widget__border);
   flex-shrink: 0;
+
+  /* subtle top accent line */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
+/* ── File path ───────────────────────────────────────────────── */
+
 .toolbar__filename {
-  font-size: 0.85rem;
-  color: var(--widget__color-options);
   flex: 1;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  font-size: 0.78rem;
   font-family: var(--editor__font);
+  color: var(--widget__color-options);
+  letter-spacing: 0.01em;
 }
 
+/* ── Save button ─────────────────────────────────────────────── */
+
 .toolbar__save {
-  margin-left: auto;
   flex-shrink: 0;
-  padding: 0.25rem 0.75rem;
-  background: var(--color-success);
-  color: #fff;
-  border: none;
+  padding: 0 16px;
+  height: 26px;
+
+  background: linear-gradient(
+    160deg,
+    rgba(35, 134, 54, 0.8) 0%,
+    rgba(26, 110, 44, 0.9) 100%
+  );
+  color: #d2f4db;
+  border: 1px solid rgba(63, 185, 80, 0.45);
   border-radius: 6px;
-  font-size: 0.8rem;
+
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background 0.15s;
+
+  box-shadow:
+    0 0 6px rgba(63, 185, 80, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.22s ease,
+    color 0.18s ease,
+    transform 0.1s ease;
 }
 
 .toolbar__save:hover:not(:disabled) {
-  background: var(--color-success-hover);
+  background: linear-gradient(
+    160deg,
+    rgba(46, 160, 67, 0.9) 0%,
+    rgba(35, 134, 54, 1) 100%
+  );
+  border-color: rgba(63, 185, 80, 0.75);
+  color: #fff;
+  box-shadow:
+    0 0 20px rgba(63, 185, 80, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.toolbar__save:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow:
+    0 0 8px rgba(63, 185, 80, 0.3),
+    inset 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .toolbar__save:disabled {
-  background: var(--color-success-muted);
+  background: transparent;
   color: var(--editor__line-number);
+  border-color: rgba(110, 118, 129, 0.25);
+  box-shadow: none;
   cursor: not-allowed;
+  opacity: 1;
+}
+
+.toolbar__save--saving {
+  animation:
+    toolbar-pulse 1.4s ease-in-out infinite,
+    toolbar-save-glow 1.4s ease-in-out infinite;
+  cursor: wait;
 }
