@@ -1,8 +1,8 @@
 .toast {
   position: fixed;
   top: calc(var(--toolbar-height) + 10px);
-  left: 50%;
-  transform: translateX(-50%) translateY(-10px) scale(0.94);
+  right: 32px;
+  transform: translateY(-10px) scale(0.94);
 
   display: flex;
   align-items: center;
@@ -35,7 +35,7 @@
 
 .toast--visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translateY(0) scale(1);
 }
 
 .toast::before {

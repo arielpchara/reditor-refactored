@@ -62,7 +62,9 @@
   outline: none;
   caret-color: var(--color-accent);
   letter-spacing: 0.2em;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
 }
 
 .otp__input:focus {

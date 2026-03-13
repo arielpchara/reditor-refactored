@@ -21,8 +21,8 @@
     "test:coverage": "jest --coverage",
     "test:web": "cd web && npm test",
     "typecheck:web": "cd web && npm run typecheck",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\"",
+    "format": "prettier --write \"{src,web/src}/**/*.{ts,tsx,css}\"",
+    "format:check": "prettier --check \"{src,web/src}/**/*.{ts,tsx,css}\"",
     "typecheck": "tsc --noEmit",
     "spell": "cspell lint --no-progress",
     "prepare": "husky"
@@ -30,6 +30,9 @@
   "lint-staged": {
     "*.{ts,tsx}": [
       "cspell lint --no-progress --no-must-use-config",
+      "prettier --check"
+    ],
+    "*.css": [
       "prettier --check"
     ],
     "*.{md,html}": [

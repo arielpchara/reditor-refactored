@@ -59,11 +59,7 @@
   padding: 0 16px;
   height: 26px;
 
-  background: linear-gradient(
-    160deg,
-    rgba(35, 134, 54, 0.8) 0%,
-    rgba(26, 110, 44, 0.9) 100%
-  );
+  background: linear-gradient(160deg, rgba(35, 134, 54, 0.8) 0%, rgba(26, 110, 44, 0.9) 100%);
   color: #d2f4db;
   border: 1px solid rgba(63, 185, 80, 0.45);
   border-radius: 6px;
@@ -87,11 +83,7 @@
 }
 
 .toolbar__save:hover:not(:disabled) {
-  background: linear-gradient(
-    160deg,
-    rgba(46, 160, 67, 0.9) 0%,
-    rgba(35, 134, 54, 1) 100%
-  );
+  background: linear-gradient(160deg, rgba(46, 160, 67, 0.9) 0%, rgba(35, 134, 54, 1) 100%);
   border-color: rgba(63, 185, 80, 0.75);
   color: #fff;
   box-shadow:

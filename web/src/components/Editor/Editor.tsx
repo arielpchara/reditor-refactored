@@ -35,11 +35,15 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor(
 
   useEffect(() => {
     if (!containerRef.current) return;
-    editorInstanceRef.current = basicEditor(
-      containerRef.current,
-      { language, theme: 'github-dark', value: initialContent },
-      () => onChange(editorInstanceRef.current?.value ?? ''),
-    );
+    editorInstanceRef.current = basicEditor(containerRef.current, {
+      language,
+      theme: 'github-dark',
+      value: initialContent,
+      lineNumbers: true,
+      onUpdate(value) {
+        onChange(value);
+      },
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // mount once only
 
