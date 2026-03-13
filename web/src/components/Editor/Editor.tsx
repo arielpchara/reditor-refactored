@@ -1,5 +1,5 @@
 import './Editor.css';
-import { JSX, useEffect, useRef } from 'react';
+import { JSX, useEffect, useRef, useState } from 'react';
 import 'prism-code-editor/prism/languages/markup';
 import 'prism-code-editor/prism/languages/css';
 import 'prism-code-editor/prism/languages/javascript';
@@ -26,19 +26,25 @@ export type EditorProps = {
 export function Editor({ language, value, onChange }: EditorProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const editorInstanceRef = useRef<ReturnType<typeof basicEditor> | null>(null);
-
+  const [isEditorReady, setIsEditorReady] = useState(false);
   // Mount the editor once with the initial value.
   useEffect(() => {
     if (!containerRef.current) return;
-    editorInstanceRef.current = basicEditor(containerRef.current, {
-      language,
-      theme: 'github-dark',
-      value,
-      lineNumbers: true,
-      onUpdate(v) {
-        onChange(v);
+    editorInstanceRef.current = basicEditor(
+      containerRef.current,
+      {
+        language,
+        theme: 'github-dark',
+        value,
+        lineNumbers: true,
+        onUpdate(v) {
+          onChange(v);
+        },
       },
-    });
+      () => {
+        setIsEditorReady(true);
+      },
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -47,9 +53,10 @@ export function Editor({ language, value, onChange }: EditorProps): JSX.Element 
   useEffect(() => {
     const editor = editorInstanceRef.current;
     if (!editor || editor.value === value) return;
+    if (!isEditorReady) return; // Avoid syncing before the editor is ready.
     editor.textarea.value = value;
     editor.textarea.dispatchEvent(new InputEvent('input', { bubbles: true }));
-  }, [value]);
+  }, [value, isEditorReady]);
 
   return <div ref={containerRef} className="editor" />;
 }

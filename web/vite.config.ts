@@ -9,6 +9,8 @@ export default defineConfig({
     // live together in a single dist/ directory for npm publishing.
     outDir: '../dist/web',
     emptyOutDir: true,
+    minify: true,
+    sourcemap: true,
   },
   test: {
     environment: 'jsdom',
