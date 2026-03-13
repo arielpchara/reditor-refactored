@@ -9,7 +9,7 @@ const fileSaveHandler_1 = require("./fileSaveHandler");
 const fileMetaHandler_1 = require("./fileMetaHandler");
 const authMiddleware_1 = require("./authMiddleware");
 const registerRoutes = (app, config) => {
-    app.get('/health', handlers_1.healthHandler);
+    app.get('/health', (0, handlers_1.makeHealthHandler)(config));
     logger_1.logger.info('Registered route: GET /health');
     if (config.securityEnabled) {
         app.post('/auth/exchange-token', (0, authHandlers_1.makeExchangeTokenHandler)(config));

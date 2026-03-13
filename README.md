@@ -116,7 +116,7 @@ curl https://localhost:3000/file-meta
 
 ### `GET /file`
 
-Returns the raw content of the file configured at startup (`<file>` argument). Requires a valid JWT in the `Authorization` header when `--enable-security` is active.
+Returns the raw content of the file configured at startup (`<file>` argument). Requires a valid JWT in the `Authorization` header when security is active (default).
 
 ```bash
 # Without security
@@ -178,7 +178,7 @@ Environment variables (all optional — CLI flags take precedence):
 |---|---|---|
 | `PORT` | `3000` | Port the server listens on |
 | `HOST` | `localhost` | Hostname the server binds to |
-| `USE_TLS` | `true` | Set to `false` to use plain HTTP (overridden by `--enable-security`) |
+| `USE_TLS` | `true` | Set to `false` to use plain HTTP |
 | `CERT_PATH` | — | Path to TLS certificate file (PEM). If unset, a self-signed cert is generated |
 | `KEY_PATH` | — | Path to TLS private key file (PEM) |
 

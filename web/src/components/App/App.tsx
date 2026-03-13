@@ -3,8 +3,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Editor, EditorHandle } from '../Editor';
 import { OtpDialog } from '../OtpDialog';
 import { Toolbar } from '../Toolbar';
+import { Toast, ToastKind } from '../Toast';
 
-type AppStatus = { msg: string; kind: 'ok' | 'error' | '' };
+type ToastState = { message: string; kind: ToastKind; key: number } | null;
 type LoadPhase = 'loading' | 'auth' | 'ready' | 'error';
 
 const EXT_TO_LANG: Record<string, string> = {
@@ -51,7 +52,7 @@ export function App(): JSX.Element {
   const [filename, setFilename] = useState('');
   const [language, setLanguage] = useState('plaintext');
   const [initialContent, setInitialContent] = useState('');
-  const [status, setStatus] = useState<AppStatus>({ msg: '', kind: '' });
+  const [toast, setToast] = useState<ToastState>(null);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -64,8 +65,8 @@ export function App(): JSX.Element {
       setPhase('error');
       return;
     }
-    const meta = (await metaRes.json()) as { filename: string };
-    setFilename(meta.filename);
+    const meta = (await metaRes.json()) as { filename: string; fullpath: string };
+    setFilename(meta.fullpath);
     setLanguage(detectLanguage(meta.filename));
     document.title = `Reditor — ${meta.filename}`;
 
@@ -100,9 +101,12 @@ export function App(): JSX.Element {
     await loadFileData();
   }, [loadFileData]);
 
+  const showToast = useCallback((message: string, kind: ToastKind): void => {
+    setToast({ message, kind, key: Date.now() });
+  }, []);
+
   const handleSave = useCallback(async (): Promise<void> => {
     setIsSaving(true);
-    setStatus({ msg: 'Saving…', kind: '' });
     try {
       const res = await fetchWithAuth('/file', {
         method: 'PUT',
@@ -110,17 +114,18 @@ export function App(): JSX.Element {
         body: JSON.stringify({ content: editorRef.current?.getValue() ?? '' }),
       });
       if (res.ok) {
-        setStatus({ msg: 'Saved', kind: 'ok' });
+        setIsDirty(false);
+        showToast('Saved', 'ok');
       } else {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
-        setStatus({ msg: body.error ?? `Error ${res.status}`, kind: 'error' });
+        showToast(body.error ?? `Error ${res.status}`, 'error');
       }
     } catch {
-      setStatus({ msg: 'Network error', kind: 'error' });
+      showToast('Network error', 'error');
     } finally {
       setIsSaving(false);
     }
-  }, []);
+  }, [showToast]);
 
   if (phase === 'loading') return <div className="app__loading">Loading…</div>;
   if (phase === 'error') return <div className="app__error">Error: {errorMsg}</div>;
@@ -132,7 +137,6 @@ export function App(): JSX.Element {
         filename={filename}
         isDirty={isDirty}
         isSaving={isSaving}
-        status={status}
         onSave={() => void handleSave()}
       />
       <Editor
@@ -141,9 +145,16 @@ export function App(): JSX.Element {
         initialContent={initialContent}
         onChange={() => {
           setIsDirty(true);
-          setStatus({ msg: '', kind: '' });
         }}
       />
+      {toast && (
+        <Toast
+          key={toast.key}
+          message={toast.message}
+          kind={toast.kind}
+          onHide={() => setToast(null)}
+        />
+      )}
     </>
   );
 }

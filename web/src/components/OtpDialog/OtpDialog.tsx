@@ -72,7 +72,10 @@ export function OtpDialog({ onSuccess, fetchFn = fetch }: OtpDialogProps): JSX.E
             id="otp-input"
             className="otp__input"
             type="password"
-            autoComplete="one-time-code"
+            autoComplete="off"
+            data-1p-ignore
+            data-lpignore="true"
+            data-form-type="other"
             spellCheck={false}
             autoFocus
             value={otpValue}

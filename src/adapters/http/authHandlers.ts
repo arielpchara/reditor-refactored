@@ -4,7 +4,19 @@ import { buildTokenResult } from '../../core/security/jwt';
 import { RouteHandler } from './types';
 import { logger } from '../logger';
 
-export const makeExchangeTokenHandler = (config: AppConfig): RouteHandler => {
+export const MAX_OTP_ATTEMPTS = 3;
+
+type ExchangeHandlerDeps = {
+  exit?: (code: number) => void;
+};
+
+export const makeExchangeTokenHandler = (
+  config: AppConfig,
+  deps: ExchangeHandlerDeps = {},
+): RouteHandler => {
+  const exit = deps.exit ?? ((code) => process.exit(code));
+  let failedAttempts = 0;
+
   return (req: Request, res: Response): void => {
     if (!config.securityEnabled || !config.otp) {
       logger.warn('Token exchange rejected because security is disabled');
@@ -15,11 +27,29 @@ export const makeExchangeTokenHandler = (config: AppConfig): RouteHandler => {
     const { otp } = req.body as { otp: string };
 
     if (!otp || otp !== config.otp) {
+      failedAttempts += 1;
+      const remaining = MAX_OTP_ATTEMPTS - failedAttempts;
       logger.warn('Token exchange rejected due to invalid OTP', {
         hasOtp: Boolean(otp),
         ip: req.ip,
+        failedAttempts,
+        remaining,
       });
-      res.status(401).json({ error: 'Invalid OTP' });
+
+      if (failedAttempts >= MAX_OTP_ATTEMPTS) {
+        logger.error(
+          `OTP max attempts (${MAX_OTP_ATTEMPTS}) exceeded — shutting down for security`,
+          { ip: req.ip },
+        );
+        res
+          .status(401)
+          .json({ error: 'Invalid OTP. Maximum attempts exceeded — server is shutting down.' });
+        // Delay exit so the response can be flushed
+        setTimeout(() => exit(1), 200);
+        return;
+      }
+
+      res.status(401).json({ error: 'Invalid OTP', attemptsLeft: remaining });
       return;
     }
 

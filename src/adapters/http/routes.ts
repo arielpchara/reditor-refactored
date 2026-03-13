@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { AppConfig } from '../../config/types';
 import { logger } from '../logger';
-import { healthHandler } from './handlers';
+import { makeHealthHandler } from './handlers';
 import { makeExchangeTokenHandler } from './authHandlers';
 import { makeFileHandler } from './fileHandlers';
 import { makeFileSaveHandler } from './fileSaveHandler';
@@ -9,7 +9,7 @@ import { makeFileMetaHandler } from './fileMetaHandler';
 import { makeAuthMiddleware } from './authMiddleware';
 
 export const registerRoutes = (app: Express, config: AppConfig): void => {
-  app.get('/health', healthHandler);
+  app.get('/health', makeHealthHandler(config));
   logger.info('Registered route: GET /health');
 
   if (config.securityEnabled) {

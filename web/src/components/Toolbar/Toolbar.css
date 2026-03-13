@@ -16,9 +16,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--editor__font);
 }
 
 .toolbar__save {
+  margin-left: auto;
+  flex-shrink: 0;
   padding: 0.25rem 0.75rem;
   background: var(--color-success);
   color: #fff;
@@ -38,18 +41,4 @@
   background: var(--color-success-muted);
   color: var(--editor__line-number);
   cursor: not-allowed;
-}
-
-.toolbar__status {
-  font-size: 0.75rem;
-  min-width: 5rem;
-  text-align: right;
-}
-
-.toolbar__status--ok {
-  color: var(--color-success-text);
-}
-
-.toolbar__status--error {
-  color: var(--color-danger);
 }

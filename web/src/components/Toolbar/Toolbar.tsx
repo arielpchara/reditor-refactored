@@ -1,25 +1,22 @@
+import { JSX } from 'react';
 import './Toolbar.css';
-
-type StatusKind = 'ok' | 'error' | '';
 
 export type ToolbarProps = {
   filename: string;
   isDirty: boolean;
   isSaving: boolean;
-  status: { msg: string; kind: StatusKind };
   onSave: () => void;
 };
 
-export function Toolbar({ filename, isDirty, isSaving, status, onSave }: ToolbarProps): JSX.Element {
-  const statusClass = `toolbar__status${status.kind ? ` toolbar__status--${status.kind}` : ''}`;
-
+export function Toolbar({ filename, isDirty, isSaving, onSave }: ToolbarProps): JSX.Element {
   return (
     <div className="toolbar">
-      <span className="toolbar__filename">{filename}</span>
+      <span className="toolbar__filename" title={filename}>
+        {filename}
+      </span>
       <button className="toolbar__save" disabled={!isDirty || isSaving} onClick={onSave}>
-        Save
+        {isSaving ? 'Saving…' : 'Save'}
       </button>
-      <span className={statusClass}>{status.msg}</span>
     </div>
   );
 }
