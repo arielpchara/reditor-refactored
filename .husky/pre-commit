@@ -7,7 +7,13 @@ npx lint-staged
 echo "🔷 [pre-commit] Running TypeScript syntax check..."
 npm run typecheck
 
+echo "🔷 [pre-commit] Running TypeScript syntax check (web)..."
+npm run typecheck:web
+
 echo "🧪 [pre-commit] Running unit tests..."
 npm test
+
+echo "🧪 [pre-commit] Running unit tests (web)..."
+npm run test:web
 
 echo "✅ [pre-commit] All checks passed."

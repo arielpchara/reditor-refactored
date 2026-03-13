@@ -1,5 +1,5 @@
 import './App.css';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { JSX, useCallback, useEffect, useRef, useState } from 'react';
 import { Editor, EditorHandle } from '../Editor';
 import { OtpDialog } from '../OtpDialog';
 import { Toolbar } from '../Toolbar';

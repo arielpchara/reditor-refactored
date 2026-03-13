@@ -22,6 +22,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:web": "cd web && npm test",
+    "typecheck:web": "cd web && npm run typecheck",
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\"",
     "typecheck": "tsc --noEmit",
@@ -29,7 +30,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{ts,tsx}": [
       "cspell lint --no-progress --no-must-use-config",
       "prettier --check"
     ],

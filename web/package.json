@@ -8,7 +8,9 @@
     "build:watch": "vite build --watch",
     "dev": "vite",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\""
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
